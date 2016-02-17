@@ -25,18 +25,18 @@ class GraphError(Exception):
 
 class vertex():
     """
-	Vertex objects have an attribute <_graph> pointing to the graph they are part of, 
-	and an attribute <_label> which can be anything: it is not used for any methods,
-	except for __repr__. 
-	"""
+    Vertex objects have an attribute <_graph> pointing to the graph they are part of,
+    and an attribute <_label> which can be anything: it is not used for any methods,
+    except for __repr__.
+    """
 
     def __init__(self, graph, label=0):
         """
-		Creates a vertex, part of <graph>, with optional label <label>.
-		(Labels of different vertices may be chosen the same; this does
-		not influence correctness of the methods, but will make the string
-		representation of the graph ambiguous.)
-		"""
+        Creates a vertex, part of <graph>, with optional label <label>.
+        (Labels of different vertices may be chosen the same; this does
+        not influence correctness of the methods, but will make the string
+        representation of the graph ambiguous.)
+        """
         self._graph = graph
         self._label = label
 
