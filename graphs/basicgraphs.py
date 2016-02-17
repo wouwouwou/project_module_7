@@ -45,6 +45,12 @@ class vertex():
     def __repr__(self):
         return str(self._label)
 
+    def neighbourtags(self):
+        tags = []
+        for vertex in self.nbs():
+            tags.append(vertex._tag)
+        return tags
+
     def settag(self, tag):
         self._tag = tag
 
