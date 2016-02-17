@@ -9,8 +9,9 @@ from graphs import basicgraphs
 
 def colorrefinement(G):
     for v in G.V():
-        v.set_color_tag(v.deg())
-    return G
+        v.settag(v.deg())
+
+    return checkneighbours(G)
 
 
 def checkneighbours(g):
@@ -38,6 +39,7 @@ def herindeel(g, v, next_color):
         if nb != na:
             b.colornum = next_color
             changed = True
+        i += 1
     if changed:
         next_color += 1
     return g, next_color

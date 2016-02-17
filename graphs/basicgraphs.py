@@ -47,7 +47,7 @@ class vertex():
     def neighbourtags(self):
         tags = []
         for vertex in self.nbs():
-            tags.append(vertex.colortag)
+            tags.append(vertex.colornum)
         return tags
 
     def settag(self, colornum):
@@ -169,19 +169,19 @@ class graph():
     def __repr__(self):
         return 'V=' + str(self._V) + '\nE=' + str(self._E)
 
-    def getVWithTag(self, tag):
+    def getVWithTag(self, colornum):
         vs = []
         for vertex in self.V():
-            if vertex._tag == tag:
-                vs.append(tag)
+            if vertex.colornum == colornum:
+                vs.append(vertex)
         return vs
 
 
     def maxtag(self):
         max = 0
         for vertex in self.V():
-            if vertex._tag > max:
-                max = vertex._tag
+            if vertex.colornum > max:
+                max = vertex.colornum
         return max
 
     def V(self):
