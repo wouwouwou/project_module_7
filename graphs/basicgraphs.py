@@ -27,7 +27,7 @@ class vertex():
 	and an attribute <_label> which can be anything: it is not used for any methods,
 	except for __repr__. 
 	"""
-	def __init__(self,graph,label=0):
+	def __init__(self,graph,label=0,color_tag=0):
 		"""
 		Creates a vertex, part of <graph>, with optional label <label>.
 		(Labels of different vertices may be chosen the same; this does
@@ -36,9 +36,18 @@ class vertex():
 		"""
 		self._graph=graph
 		self._label=label
+		self._color_tag=color_tag
 		
 	def __repr__(self):
-		return str(self._label)		
+		return str(self._label)
+
+	def set_color_tag(self, color_tag):
+		"""
+		:param color_tag:
+		:return:
+		Adds a color tag to the vertex
+		"""
+		self._color_tag = color_tag
 		
 	def adj(self,other):
 		"""
