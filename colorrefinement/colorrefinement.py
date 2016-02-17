@@ -36,7 +36,7 @@ def herindeel(g, v, next_color):
         b = v[i]
         nb = b.neighbourtags()
         if nb != na:
-            b.tag = next_color
+            b.colornum = next_color
             changed = True
     if changed:
         next_color += 1
