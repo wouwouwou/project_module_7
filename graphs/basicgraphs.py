@@ -39,9 +39,14 @@ class vertex():
         """
         self._graph = graph
         self._label = label
+        self._tag = 0
+
 
     def __repr__(self):
         return str(self._label)
+
+    def settag(self, tag):
+        self._tag = tag
 
     def adj(self, other):
         """
@@ -182,12 +187,20 @@ class graph():
         # may be changed later for a more general version that can also
         # handle directed graphs.
         self._simple = simple
+        self._maxtag = None
         self._nextlabel = 0
         for i in range(n):
             self.addvertex()
 
     def __repr__(self):
         return 'V=' + str(self._V) + '\nE=' + str(self._E)
+
+    def maxtag(self):
+        max = 0
+        for vertex in self.V():
+            if vertex._tag > max:
+                max = vertex._tag
+        return max
 
     def V(self):
         """
