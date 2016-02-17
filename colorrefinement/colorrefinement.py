@@ -18,7 +18,7 @@ def checkneighbours(g):
     next_color = max_color + 1
     i = 1
     while i <= max_color:
-        v = g.getvwithtag(i)
+        v = g.getVWithTag(i)
         if len(v) != 1:
             g, nextcolor = herindeel(g, v, next_color)
         i += 1
