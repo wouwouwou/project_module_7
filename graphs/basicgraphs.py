@@ -45,8 +45,8 @@ class vertex():
 
     def adj(self, other):
         """
-		Returns True iff vertex <self> is adjacent to <other> vertex.
-		"""
+        Returns True iff vertex <self> is adjacent to <other> vertex.
+        """
         return self._graph.adj(self, other)
 
     def inclist(self):
