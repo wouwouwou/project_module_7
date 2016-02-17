@@ -39,7 +39,7 @@ class vertex():
         """
         self._graph = graph
         self._label = label
-        self._tag = 0
+        self.colornum = 0
 
     def __repr__(self):
         return str(self._label)
@@ -47,11 +47,11 @@ class vertex():
     def neighbourtags(self):
         tags = []
         for vertex in self.nbs():
-            tags.append(vertex._tag)
+            tags.append(vertex.colortag)
         return tags
 
-    def settag(self, tag):
-        self._tag = tag
+    def settag(self, colornum):
+        self.colornum = colornum
 
     def adj(self, other):
         """
