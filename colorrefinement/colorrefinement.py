@@ -9,7 +9,7 @@ from graphs import basicgraphs
 
 def colorrefinement(G):
     for v in G.V():
-        v.settag(v.deg())
+        v.settag(v.deg() - 1)
 
     return checkneighbours(G)
 
@@ -21,7 +21,7 @@ def checkneighbours(g):
     while i <= max_color:
         v = g.getVWithTag(i)
         if len(v) != 1:
-            g, nextcolor = herindeel(g, v, next_color)
+            g, next_color = herindeel(g, v, next_color)
         i += 1
     if next_color != max_color + 1:
         g = checkneighbours(g)
@@ -31,15 +31,49 @@ def checkneighbours(g):
 def herindeel(g, v, next_color):
     a = v[0]
     na = a.neighbourtags()
+    mergeSort(na)
     changed = False
     i = 1
     while i < len(v):
         b = v[i]
         nb = b.neighbourtags()
-        if nb != na:
+        mergeSort(nb)
+        if na != nb:
             b.colornum = next_color
             changed = True
         i += 1
     if changed:
         next_color += 1
     return g, next_color
+
+
+def mergeSort(a):
+    if len(a) > 1:
+        mid = len(a) // 2
+        lefthalf = a[:mid]
+        righthalf = a[mid:]
+
+        mergeSort(lefthalf)
+        mergeSort(righthalf)
+
+        i = 0
+        j = 0
+        k = 0
+        while i < len(lefthalf) and j < len(righthalf):
+            if lefthalf[i] < righthalf[j]:
+                a[k] = lefthalf[i]
+                i += 1
+            else:
+                a[k] = righthalf[j]
+                j += 1
+            k += 1
+
+        while i < len(lefthalf):
+            a[k] = lefthalf[i]
+            i += 1
+            k += 1
+
+        while j < len(righthalf):
+            a[k] = righthalf[j]
+            j += 1
+            k += 1
