@@ -201,6 +201,14 @@ class graph():
     def __repr__(self):
         return 'V=' + str(self._V) + '\nE=' + str(self._E)
 
+    def getVWithTag(self, tag):
+        vs = []
+        for vertex in self.V():
+            if vertex._tag == tag:
+                vs.append(tag)
+        return vs
+
+
     def maxtag(self):
         max = 0
         for vertex in self.V():
