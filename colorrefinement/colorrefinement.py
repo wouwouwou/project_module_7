@@ -14,37 +14,30 @@ def colorrefinement(G):
 
 
 def checkneighbours(g):
-    """
-    max_color = g.get_max_color()
+    max_color = g.maxtag()
     next_color = max_color + 1
     i = 1
     while i <= max_color:
-        v = g.get_nodes_color_i(i)
+        v = g.getvwithtag(i)
         if len(v) != 1:
             g, nextcolor = herindeel(g, v, next_color)
-        i++
-
-    """
-    for v in g.V():
-        pass
-    pass
+        i += 1
+    if next_color != max_color + 1:
+        g = checkneighbours(g)
+    return g
 
 
 def herindeel(g, v, next_color):
-    """
     a = v[0]
-    na = a.get_neighbour_colors()
-    differs = list()
+    na = a.neighbourtags()
     changed = False
     i = 1
     while i < len(v):
         b = v[i]
-        nb = b.get_neighbour_colors()
+        nb = b.neighbourtags()
         if nb != na:
             b.tag = next_color
             changed = True
     if changed:
         next_color += 1
     return g, next_color
-    """
-    pass

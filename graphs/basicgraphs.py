@@ -41,7 +41,6 @@ class vertex():
         self._label = label
         self._tag = 0
 
-
     def __repr__(self):
         return str(self._label)
 
@@ -59,38 +58,39 @@ class vertex():
         Returns True iff vertex <self> is adjacent to <other> vertex.
         """
         return self._graph.adj(self, other)
-	"""
+        """
 	Vertex objects have an attribute <_graph> pointing to the graph they are part of,
 	and an attribute <_label> which can be anything: it is not used for any methods,
 	except for __repr__.
 	"""
-	def __init__(self,graph,label=0,color_tag=0):
-		"""
+
+        def __init__(self, graph, label=0, color_tag=0):
+            """
 		Creates a vertex, part of <graph>, with optional label <label>.
 		(Labels of different vertices may be chosen the same; this does
 		not influence correctness of the methods, but will make the string
 		representation of the graph ambiguous.)
 		"""
-		self._graph=graph
-		self._label=label
-		self._color_tag=color_tag
+            self._graph = graph
+            self._label = label
+            self._color_tag = color_tag
 
-	def __repr__(self):
-		return str(self._label)
+        def __repr__(self):
+            return str(self._label)
 
-	def set_color_tag(self, color_tag):
-		"""
+        def set_color_tag(self, color_tag):
+            """
 		:param color_tag:
 		:return:
 		Adds a color tag to the vertex
 		"""
-		self._color_tag = color_tag
+            self._color_tag = color_tag
 
-	def adj(self,other):
-		"""
+        def adj(self, other):
+            """
 		Returns True iff vertex <self> is adjacent to <other> vertex.
 		"""
-		return self._graph.adj(self,other)
+            return self._graph.adj(self, other)
 
     def inclist(self):
         """
