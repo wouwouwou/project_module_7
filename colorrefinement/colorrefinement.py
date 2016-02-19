@@ -16,11 +16,11 @@ def colorrefinement(G):
 
 
 def checkneighbours(g):
-    max_color = g.maxtag()
+    max_color = g.maxcolornum()
     next_color = max_color + 1
     i = 1
     while i <= max_color:
-        v = g.getVWithTag(i)
+        v = g.getvwithtag(i)
         if len(v) != 1:
             g, next_color = herindeel(g, v, next_color)
         i += 1
