@@ -1,9 +1,10 @@
 from graphs import graphIO
 from graphs import basicgraphs
+from sortingalgorithms.mergesort import *
 
 """
-    INPUT: A graph G = (V, E), and initial coloring a0 of V
-    OUTPUT: A stable coloring ai of G.
+INPUT: A graph G = (V, E), and initial coloring a0 of V
+OUTPUT: A stable coloring ai of G.
 """
 
 
@@ -31,13 +32,13 @@ def checkneighbours(g):
 def herindeel(g, v, next_color):
     a = v[0]
     na = a.neighbourtags()
-    mergeSort(na)
+    msintlist(na)
     changed = False
     i = 1
     while i < len(v):
         b = v[i]
         nb = b.neighbourtags()
-        mergeSort(nb)
+        msintlist(nb)
         if na != nb:
             b.colornum = next_color
             changed = True
@@ -45,35 +46,3 @@ def herindeel(g, v, next_color):
     if changed:
         next_color += 1
     return g, next_color
-
-
-def mergeSort(a):
-    if len(a) > 1:
-        mid = len(a) // 2
-        lefthalf = a[:mid]
-        righthalf = a[mid:]
-
-        mergeSort(lefthalf)
-        mergeSort(righthalf)
-
-        i = 0
-        j = 0
-        k = 0
-        while i < len(lefthalf) and j < len(righthalf):
-            if lefthalf[i] < righthalf[j]:
-                a[k] = lefthalf[i]
-                i += 1
-            else:
-                a[k] = righthalf[j]
-                j += 1
-            k += 1
-
-        while i < len(lefthalf):
-            a[k] = lefthalf[i]
-            i += 1
-            k += 1
-
-        while j < len(righthalf):
-            a[k] = righthalf[j]
-            j += 1
-            k += 1
