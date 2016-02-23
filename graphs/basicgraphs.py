@@ -29,7 +29,7 @@ class vertex:
     """
     Vertex objects have an attribute <_graph> pointing to the graph they are part of,
     and an attribute <_label> which can be anything: it is not used for any methods,
-    except for __repr__.
+    except for __repr__. It contains getters and setters for each attribute.
     """
 
     def __init__(self, graph, label=0):
@@ -42,21 +42,40 @@ class vertex:
         self._graph = graph
         self._label = label
         self.colornum = 0
+        self._inclist = []
 
     def __repr__(self):
         return str(self._label)
 
-    def neighbourtags(self):
-        tags = []
-        for v in self.nbs():
-            tags.append(v.colornum)
-        return tags
-
-    def settag(self, colornum):
-        self.colornum = colornum
-
     def getgraph(self):
         return self._graph
+
+    def setgraph(self, graph):
+        self._graph = graph
+
+    def getlabel(self):
+        return self._label
+
+    def setlabel(self, label):
+        self._label = label
+
+    def getcolornum(self):
+        return self.colornum
+
+    def setcolornum(self, colornum):
+        self.colornum = colornum
+
+    def getinclist(self):
+        return self._inclist
+
+    def setinclist(self, inclist):
+        self._inclist = inclist
+
+    def nbcolornums(self):
+        colornums = []
+        for v in self.nbs():
+            colornums.append(v.colornum)
+        return colornums
 
     def adj(self, other):
         """
@@ -66,23 +85,13 @@ class vertex:
         """
         return self._graph.adj(self, other)
 
-    def inclist(self):
-        """
-        Returns the list of edges incident with vertex <self>.
-        """
-        incl = []
-        for e in self._graph.E():
-            if e.incident(self):
-                incl.append(e)
-        return incl
-
     def nbs(self):
         """
         Returns the list of neighbors of vertex <self>.
         In case of parallel edges: duplicates are not removed from this list!
         """
         nbl = []
-        for e in self.inclist():
+        for e in self.getinclist():
             nbl.append(e.otherend(self))
         return nbl
 
@@ -90,7 +99,7 @@ class vertex:
         """
         Returns the degree of vertex <self>.
         """
-        return len(self.inclist())
+        return len(self.getinclist())
 
 
 class edge:
@@ -141,7 +150,7 @@ class edge:
 
         :param vertex: The vertex <vertex> the edge <self> should be incident with.
         """
-        if self._tail == vertex or self._head == vertex:
+        if self.tail() == vertex or self.head() == vertex:
             return True
         else:
             return False
@@ -171,27 +180,12 @@ class graph:
         # may be changed later for a more general version that can also
         # handle directed graphs.
         self._simple = simple
-        self._maxtag = None
         self._nextlabel = 0
         for i in range(n):
             self.addvertex()
 
     def __repr__(self):
         return 'V=' + str(self._V) + '\nE=' + str(self._E)
-
-    def getvwithtag(self, colornum):
-        vs = []
-        for v in self.V():
-            if v.colornum == colornum:
-                vs.append(v)
-        return vs
-
-    def maxcolornum(self):
-        maxcolornum = 0
-        for v in self.V():
-            if v.colornum > maxcolornum:
-                maxcolornum = v.colornum
-        return maxcolornum
 
     def V(self):
         """
@@ -217,6 +211,12 @@ class graph:
         this is not related to the vertex labels.
         """
         return self._V[i]
+
+    def isdirected(self):
+        """
+        Returns False, because for now these graphs are always undirected.
+        """
+        return self._directed
 
     def addvertex(self, label=-1):
         """
@@ -254,6 +254,8 @@ class graph:
                 'Edges of a graph G must be between vertices of G')
         e = edge(tail, head)
         self._E.append(e)
+        tail.getinclist().append(e)
+        head.getinclist().append(e)
         return e
 
     def findedge(self, u, v):
@@ -264,9 +266,14 @@ class graph:
         :param v: vertex v
         :param u: vertex u
         """
-        for e in self._E:
-            if (e.tail() == u and e.head() == v) or (e.tail() == v and e.head() == u):
-                return e
+        if len(u.getinclist()) < len(v.getinclist()):
+            for e in u.getinclist():
+                if e.head() == v or e.tail() == v:
+                    return e
+        else:
+            for e in v.getinclist():
+                if e.tail() == u or e.head() == u:
+                    return e
         return None
 
     def adj(self, u, v):
@@ -280,8 +287,16 @@ class graph:
         else:
             return True
 
-    def isdirected(self):
-        """
-        Returns False, because for now these graphs are always undirected.
-        """
-        return self._directed
+    def getvwithcolornum(self, colornum):
+        vs = []
+        for v in self.V():
+            if v.colornum == colornum:
+                vs.append(v)
+        return vs
+
+    def maxcolornum(self):
+        maxcolornum = 0
+        for v in self.V():
+            if v.colornum > maxcolornum:
+                maxcolornum = v.colornum
+        return maxcolornum

@@ -10,7 +10,7 @@ OUTPUT: A stable coloring ai of G.
 
 def colorrefinement(G):
     for v in G.V():
-        v.settag(v.deg() - 1)
+        v.setcolornum(v.deg() - 1)
 
     return checkneighbours(G)
 
@@ -31,13 +31,13 @@ def checkneighbours(g):
 
 def herindeel(g, v, next_color):
     a = v[0]
-    na = a.neighbourtags()
+    na = a.nbcolornums()
     msintlist(na)
     changed = False
     i = 1
     while i < len(v):
         b = v[i]
-        nb = b.neighbourtags()
+        nb = b.nbcolornums()
         msintlist(nb)
         if na != nb:
             b.colornum = next_color
