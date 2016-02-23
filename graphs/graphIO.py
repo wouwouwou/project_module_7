@@ -8,7 +8,9 @@ Includes functions for reading and writing graphs, in a very simple readable for
  
 The other functions are internal, to implement the above functions.  
 
-The graph objects returned by loadgraph and inputgraph are by default constructed using the <graph> class in the module basicgraphs.py, but by using an optional argument you can use your own graph class (provided that it supports the same methods/interface).
+The graph objects returned by loadgraph and inputgraph are by default constructed using the <graph> class in the module
+basicgraphs.py, but by using an optional argument you can use your own graph class (provided that it supports the same
+methods/interface).
 
 This module also supports edge weighted graphs: edges should/will have an (integer) attribute <weight>. 
 """
@@ -31,189 +33,214 @@ numcolors = 12
 
 def readgraph(graphclass, readline):
     """
-	For internal use.
-	"""
+    For internal use.
+    :param readline:
+    :param graphclass:
+    """
     options = []
     while True:
         try:
-            S = readline()
-            n = int(S)
-            G = graphclass(n)
+            s = readline()
+            n = int(s)
+            g = graphclass(n)
             break
         except ValueError:
-            if len(S) > 0 and S[-1] == '\n':
-                options.append(S[:-1])
+            if len(s) > 0 and s[-1] == '\n':
+                options.append(s[:-1])
             else:
-                options.append(S)
-    S = readline()
+                options.append(s)
+    s = readline()
     edgelist = []
     try:
         while True:
-            comma = S.find(',')
-            if ':' in S:
-                colon = S.find(':')
-                edgelist.append((int(S[:comma]), int(S[comma + 1:colon]), int(S[colon + 1:])))
+            comma = s.find(',')
+            if ':' in s:
+                colon = s.find(':')
+                edgelist.append((int(s[:comma]), int(s[comma + 1:colon]), int(s[colon + 1:])))
             else:
-                edgelist.append((int(S[:comma]), int(S[comma + 1:]), None))
-            S = readline()
+                edgelist.append((int(s[:comma]), int(s[comma + 1:]), None))
+            s = readline()
     except Exception:
         pass
     for edge in edgelist:
         # print("Adding edge (%d,%d)"%(edge[0],edge[1]))
-        e = G.addedge(G[edge[0]], G[edge[1]])
-        if edge[2] != None:
+        e = g.addedge(g[edge[0]], g[edge[1]])
+        if edge[2] is not None:
             e.weight = edge[2]
-    if S != '' and S[0] == '-':
-        return G, options, True
+    if s != '' and s[0] == '-':
+        return g, options, True
     else:
-        return G, options, False
+        return g, options, False
 
 
 def readgraphlist(graphclass, readline):
     """
-	For internal use.
-	"""
+    For internal use.
+    :param readline:
+    :param graphclass:
+    """
     options = []
-    L = []
+    l = []
     contin = True
     while contin:
-        G, newoptions, contin = readgraph(graphclass, readline)
+        g, newoptions, contin = readgraph(graphclass, readline)
         options += newoptions
-        L.append(G)
-    return L, options
+        l.append(g)
+    return l, options
 
 
 def loadgraph(filename, graphclass=basicgraphs.graph, readlist=False):
     """
-	Reads the file <filename>, and returns the corresponding graph object.
-	Optional second argument: you may use your own <graph> class, instead of
-	 the one from basicgraphs.py (default).
-	Optional third argument: set to True if you want to read a list of graphs, and
-	options included in the file. 
-	In that case, the output is a 2-tuple, where the first item is a list of graphs,
-	and the second is a list of options (strings).
-	"""
+    Reads the file <filename>, and returns the corresponding graph object.
+    Optional second argument: you may use your own <graph> class, instead of
+    the one from basicgraphs.py (default).
+    Optional third argument: set to True if you want to read a list of graphs, and
+    options included in the file.
+    In that case, the output is a 2-tuple, where the first item is a list of graphs,
+    and the second is a list of options (strings).
+    :param readlist:
+    :param graphclass:
+    :param filename:
+    """
     readfile = open(filename, 'rt')
 
     def readln():
-        S = readfile.readline()
-        while len(S) > 0 and S[0] == '#':
-            S = readfile.readline()
-        return S
+        s = readfile.readline()
+        while len(s) > 0 and s[0] == '#':
+            s = readfile.readline()
+        return s
 
     if readlist:
-        GL, options = readgraphlist(graphclass, readln)
+        gl, options = readgraphlist(graphclass, readln)
         readfile.close()
-        return GL, options
+        return gl, options
     else:
-        G, options, tmp = readgraph(graphclass, readln)
+        g, options, tmp = readgraph(graphclass, readln)
         readfile.close()
-        return G  # ,options
+        return g  # ,options
 
 
 def inputgraph(graphclass=basicgraphs.graph, readlist=False):
     """
-	Reads a graph from stdin, and returns the corresponding graph object.
-	Optional first argument: you may use your own <graph> class, instead of
-	 the one from basicgraphs.py.
-	Optional second argument: set to True if you want to read a list of graphs, and
-	options included in the file. 
-	In that case, the output is a 2-tuple, where the first item is a list of graphs,
-	and the second is a list of options (strings).
-	"""
-
+    Reads a graph from stdin, and returns the corresponding graph object.
+    Optional first argument: you may use your own <graph> class, instead of
+     the one from basicgraphs.py.
+    Optional second argument: set to True if you want to read a list of graphs, and
+    options included in the file.
+    In that case, the output is a 2-tuple, where the first item is a list of graphs,
+    and the second is a list of options (strings).
+    :param graphclass:
+    :param readlist:
+    """
     def readln():
-        S = input()
-        while len(S) > 0 and S[0] == '#':
-            S = input()
-        return S
+        s = input()
+        while len(s) > 0 and s[0] == '#':
+            s = input()
+        return s
 
     if readlist:
-        GL, options = readgraphlist(graphclass, readln)
-        return GL, options
+        gl, options = readgraphlist(graphclass, readln)
+        return gl, options
     else:
-        G, options, tmp = readgraph(graphclass, readln)
-        return G  # ,options
+        g, options, tmp = readgraph(graphclass, readln)
+        return g  # ,options
 
 
-def writegraphlist(GL, writeline, options=[]):
+def writegraphlist(gl, writeline, options=None):
     """
-	For internal use.
-	"""
+    For internal use.
+    :param options:
+    :param writeline:
+    :param gl:
+    """
     # we may only write options that cannot be seen as an integer:
+    if options is None:
+        options = []
     for S in options:
         try:
             x = int(S)
         except ValueError:
             writeline(str(S))
-    for i in range(len(GL)):
-        G = GL[i]
-        n = len(G.V())
+    for i in range(len(gl)):
+        g = gl[i]
+        n = len(g.V())
         writeline('# Number of vertices:')
         writeline(str(n))
         # Give the vertices (temporary) labels from 0 to n-1:
-        NL = {}
+        nl = {}
         for j in range(n):
-            NL[G[j]] = j
+            nl[g[j]] = j
         writeline('# Edge list:')
-        for e in G.E():
+        for e in g.E():
             if hasattr(e, 'weight'):
-                writeline(str(NL[e.tail()]) + ',' + str(NL[e.head()]) + ':' + str(e.weight))
+                writeline(str(nl[e.tail()]) + ',' + str(nl[e.head()]) + ':' + str(e.weight))
             else:
-                writeline(str(NL[e.tail()]) + ',' + str(NL[e.head()]))
-        if i + 1 < len(GL):
+                writeline(str(nl[e.tail()]) + ',' + str(nl[e.head()]))
+        if i + 1 < len(gl):
             writeline('--- Next graph:')
 
 
-def savegraph(GL, filename, options=[]):
+def savegraph(gl, filename, options=None):
     """
-	Saves the given graph <GL> in the given <filename>.
-	Optional last argument: a list of options that will be included in the 
-	file header.
-	Alternatively, <GL> may be a list of graphs, which are then all written to the
-	file.
-	"""
+    Saves the given graph <GL> in the given <filename>.
+    Optional last argument: a list of options that will be included in the
+    file header.
+    Alternatively, <GL> may be a list of graphs, which are then all written to the
+    file.
+    :param options:
+    :param filename:
+    :param gl:
+    """
+    if options is None:
+        options = []
     writefile = open(filename, 'wt')
 
-    def writeln(S):
-        writefile.write(S + '\n')
+    def writeln(s):
+        writefile.write(s + '\n')
 
-    if type(GL) is list:
-        writegraphlist(GL, writeln, options)
+    if type(gl) is list:
+        writegraphlist(gl, writeln, options)
     else:
-        writegraphlist([GL], writeln, options)
+        writegraphlist([gl], writeln, options)
     writefile.close()
 
 
-def printgraph(GL, options=[]):
+def printgraph(gl, options=None):
     """
-	Writes the given graph <GL> to Stdout.
-	Optional last argument: as list of options that will be included in the 
-	header.
-	Alternatively, <GL> may be a list of graphs, which are then all written.
-	"""
+    Writes the given graph <GL> to Stdout.
+    Optional last argument: as list of options that will be included in the
+    header.
+    Alternatively, <GL> may be a list of graphs, which are then all written.
+    :param options:
+    :param gl:
+    """
+    if options is None:
+        options = []
 
-    def writeln(S):
-        print(S)
+    def writeln(s):
+        print(s)
 
-    if type(GL) is list:
-        writegraphlist(GL, writeln, options)
+    if type(gl) is list:
+        writegraphlist(gl, writeln, options)
     else:
-        writegraphlist([GL], writeln, options)
+        writegraphlist([gl], writeln, options)
 
 
-def writeDOT(G, filename, directed=False):
+def writeDOT(g, filename, directed=False):
     """
-	Writes the given graph <G> in .dot format to <filename>.
-	If vertices contain attributes <label>, <colortext> or <colornum>, these are also
-	included in the file. 
-	(<Colortext> should be something like "Blue"/"Magenta"/"Khaki"/"Peachpuff"/"Olivedrab",...
-	and a <colornum> should be an integer.)
-	If edges contain an attribute <weight> (integer), these are also included in the
-	file.
-	Optional argument: <directed>. If True, then the edges are written as directed edges.
-	Google GraphViz for more information on the .dot format.
-	"""
+    Writes the given graph <G> in .dot format to <filename>.
+    If vertices contain attributes <label>, <colortext> or <colornum>, these are also
+    included in the file.
+    (<Colortext> should be something like "Blue"/"Magenta"/"Khaki"/"Peachpuff"/"Olivedrab",...
+    and a <colornum> should be an integer.)
+    If edges contain an attribute <weight> (integer), these are also included in the
+    file.
+    Optional argument: <directed>. If True, then the edges are written as directed edges.
+    Google GraphViz for more information on the .dot format.
+    :param directed:
+    :param g:
+    :param filename:
+    """
     writefile = open(filename, 'wt')
     if directed:
         writefile.write('digraph G {\n')
@@ -221,7 +248,7 @@ def writeDOT(G, filename, directed=False):
         writefile.write('graph G {\n')
     name = {}
     nextname = 0
-    for v in G.V():
+    for v in g.V():
         name[v] = nextname
         nextname += 1
         options = 'penwidth=3,'
@@ -239,7 +266,7 @@ def writeDOT(G, filename, directed=False):
             writefile.write('    ' + str(name[v]) + '\n')
     writefile.write('\n')
 
-    for e in G.E():
+    for e in g.E():
         options = 'penwidth=2,'
         if hasattr(e, 'weight'):
             options += 'label="' + str(e.weight) + '",'

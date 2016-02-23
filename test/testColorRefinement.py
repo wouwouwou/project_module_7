@@ -16,5 +16,15 @@ class TestColorRefinement(unittest.TestCase):
         t = end - start
         print("Execution time: " + str(t))
 
+    def testIsomorphicGraphs(self):
+        start = time.time()
+        # Load a Python list of length 2, where the first element is a list of Graphs.
+        l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        g = colorrefinement.colorrefinement(l[0][0])
+        writeDOT(g, "output.dot")
+        end = time.time()
+        t = end - start
+        print("Execution time: " + str(t))
+
 if __name__ == '__main__':
     unittest.main()
