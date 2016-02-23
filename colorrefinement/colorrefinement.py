@@ -18,22 +18,26 @@ def isomorphicgraphs(graphlist):
         msintlist(coloring)
         colorlist.append(coloring)
 
+    print(colorlist)
+
     # loop over the list of colorings
     res = []
     i = 0
     while i < len(colorlist):
         colorcompare = [colorlist[i]]
         indexcompare = [i]
-        j = i + 1
+        j = 0
         while j < len(colorlist):
-            if colorlist[i] == colorlist[j]:
+            if colorlist[i] == colorlist[j] and i != j:
                 colorcompare.append(colorlist[j])
                 indexcompare.append(j)
             j += 1
-        if len(colorcompare) != 1:
+        if len(indexcompare) != 1:
             found = False
             for a in res:
-                if colorcompare == a:
+                msintlist(a)
+                msintlist(indexcompare)
+                if indexcompare == a:
                     found = True
                     break
             if not found:
