@@ -98,9 +98,9 @@ def loadgraph(filename, graphclass=basicgraphs.graph, readlist=False):
     options included in the file.
     In that case, the output is a 2-tuple, where the first item is a list of graphs,
     and the second is a list of options (strings).
-    :param readlist:
-    :param graphclass:
-    :param filename:
+    :param readlist: boolean to determine if it is one graph or a list of graphs
+    :param graphclass: graph class of basicgraphs.py
+    :param filename: File of the graph(list) to be loaded
     """
     readfile = open(filename, 'rt')
 
@@ -193,6 +193,7 @@ def savegraph(gl, filename, options=None):
     """
     if options is None:
         options = []
+
     writefile = open(filename, 'wt')
 
     def writeln(s):
