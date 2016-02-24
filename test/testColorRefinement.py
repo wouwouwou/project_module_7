@@ -6,6 +6,23 @@ import time
 
 
 class TestColorRefinement(unittest.TestCase):
+    def testIsomorphismCount(self):
+        start = time.time()
+
+        # Load a Python tuple of length 2, where the first element is a list of Graphs.
+        # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
+        #l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # Gets the first graph out of the list of graphs
+        writeDOT(colorrefinement.disjointunion(l[0][2], l[0][0]), "output.dot")
+        g = colorrefinement.countiso(l[0][2], l[0][0])
+        print(g)
+        end = time.time()
+        t = end - start
+        print("Execution time: " + str(t))
+
     def testColorAssignment(self):
         start = time.time()
 
