@@ -3,43 +3,52 @@ from graphs import basicgraphs
 from sortingalgorithms.mergesort import *
 
 """
-INPUT: A graph G = (V, E), and initial coloring a0 of V
-OUTPUT: A stable coloring ai of G.
+Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
 """
 
 
 def isomorphicgraphs(graphlist):
+    """
+    Return a list of the indices of the graphs which are isomorphic to each other
+
+    :param graphlist: a list of graphs
+    :return: a list of indices of the graphs which are isomorphic to each other
+    """
     res = []
-    while len(graphlist) != 0:
-        graphlist, isogroup = iteration(graphlist)
+    graphdict = dict()
+    i = 0
+    while i < len(graphlist):
+        graphdict[i] = graphlist[i]
+        i += 1
+    while len(graphdict) != 0:
+        graphdict, isogroup = iteration(graphdict)
         if len(isogroup) > 1:
             res.append(isogroup)
     return res
 
 
-def iteration(graphlist):
-    g = graphlist[0]
-    nextlist = []
-    isogroup = [getcoloring(g)]
+def iteration(graphdict):
+    indexlist = list(graphdict.keys())
+    minindex = min(indexlist)
+    g = graphdict[minindex]
+    nextdict = dict()
+    isogroup = [minindex]
     i = 1
-    while i < len(graphlist):
-        if isomorphic(g, graphlist[i]):
-            isogroup.append(getcoloring(graphlist[i]))
+    while i < len(indexlist):
+        graphindex = indexlist[i]
+        graph = graphdict[graphindex]
+        if isomorphic(g, graph):
+            isogroup.append(i)
         else:
-            nextlist.append(graphlist[i])
+            nextdict[graphindex] = graph
         i += 1
-    return nextlist, isogroup
-
-def getcoloringlist(graphlist):
-    coloringlist = []
-    for g in graphlist:
-        coloringlist.append(getcoloring(g))
-    return coloringlist
+    return nextdict, isogroup
 
 
 def getcoloring(g):
     """
     Returns a sorted coloring of graph g
+
     :param g: graph g
     :return: sorted coloring of graph g
     """
@@ -53,6 +62,7 @@ def getcoloring(g):
 def isbalanced(g, h):
     """
     Returns true if the colorings of graph g, graph h are equal
+
     :param g: graph g
     :param h: graph h
     :return: true if colorings of g and h are equal
@@ -65,6 +75,7 @@ def isbalanced(g, h):
 def definesbijection(g, h):
     """
     Return true if graph g and graph h define a bijection
+
     :param g: graph g
     :param h: graph h
     :return: tru if g and h define a bijection
@@ -94,10 +105,16 @@ def isomorphic(g, h):
         return False
     elif definesbijection(g, h):
         return True
-    return None
+    return basicgraphs.GraphError("Balanced but not bijection!")
 
 
 def colorrefinement(g):
+    """
+    Gives a stable coloring to graph g
+
+    :param g: graph g
+    :return: graph g with stable coloring
+    """
     refbydeg(g)
     refbynbs(g)
     return g
@@ -117,7 +134,7 @@ def refbydeg(g):
 def refbynbs(g):
     max_color = g.maxcolornum()
     next_color = max_color + 1
-    i = 1
+    i = 0
     while i <= max_color:
         v = g.getvwithcolornum(i)
         if len(v) > 1:
