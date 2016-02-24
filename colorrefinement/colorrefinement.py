@@ -9,6 +9,11 @@ OUTPUT: A stable coloring ai of G.
 
 
 def isomorphicgraphs(graphlist):
+    """
+    Creates an array which contains ___
+    :param graphlist:
+    :return:
+    """
     res = []
     while len(graphlist) != 0:
         graphlist, isogroup = iteration(graphlist)
@@ -19,7 +24,8 @@ def isomorphicgraphs(graphlist):
 
 def iteration(graphlist):
     """
-
+    Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
+    ___
     :param graphlist:
     :return:
     """
@@ -34,12 +40,6 @@ def iteration(graphlist):
             nextlist.append(graphlist[i])
         i += 1
     return nextlist, isogroup
-
-def getcoloringlist(graphlist):
-    coloringlist = []
-    for g in graphlist:
-        coloringlist.append(getcoloring(g))
-    return coloringlist
 
 
 def getcoloring(g):
@@ -103,12 +103,21 @@ def isomorphic(g, h):
 
 
 def colorrefinement(g):
+    """
+    Executes the refbydeg and refbynbs functions sequentially on graph g (see these two functions for further details)
+    :param g:
+    :return g modified:
+    """
     refbydeg(g)
     refbynbs(g)
     return g
 
 
 def refbydeg(g):
+    """
+    Gives all the degrees a color value and gives the vertices the color according to their degree
+    :param g:
+    """
     degs = g.degset()
     degcol = dict()
     i = 0
@@ -120,6 +129,14 @@ def refbydeg(g):
 
 
 def refbynbs(g):
+    """
+    Checks for every initially existing color if it has multiple vertices, if a color has multiple vertices it executes
+    herindeel on that same colored group of vertices. When a change has been made during the execution of herindeel
+    (indicated by the max_color value actually not being the max color anymore), refbynbs recurses untill no color
+    changes were made during its run.
+    :param g:
+    :return g modified:
+    """
     max_color = g.maxcolornum()
     next_color = max_color + 1
     i = 1
@@ -134,6 +151,15 @@ def refbynbs(g):
 
 
 def herindeel(g, v, next_color):
+    """
+    Compares vertices with the same color values and differentiates them if they still turn out to be different by
+    giving the vertices with the same value as the first checked vertex the original color and those that differentiate
+    from the first checked vertex the next_color.
+    :param g:
+    :param v:
+    :param next_color:
+    :return g modified, next_color modified:
+    """
     a = v[0]
     na = a.nbcolornums()
     msintlist(na)
