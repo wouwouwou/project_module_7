@@ -18,6 +18,11 @@ def isomorphicgraphs(graphlist):
 
 
 def iteration(graphlist):
+    """
+
+    :param graphlist:
+    :return:
+    """
     g = graphlist[0]
     nextlist = []
     isogroup = [getcoloring(g)]
