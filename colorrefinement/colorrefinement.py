@@ -2,10 +2,12 @@ from graphs import graphIO
 from graphs import basicgraphs
 from sortingalgorithms.mergesort import *
 from graphs.basicgraphs import graph
+from graphcomparison.graphcomparison import *
 
 """
 Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
 """
+
 
 def disjointunion(g: graph, h: graph):
     """
@@ -96,9 +98,6 @@ def countisomorphism(d, i, first):
     return num
 
 
-
-
-
 def isomorphicgraphs(graphlist):
     """
     Return a list of the indices of the graphs which are isomorphic to each other
@@ -111,7 +110,7 @@ def isomorphicgraphs(graphlist):
     i = 0
     while i < len(graphlist):
         graphdict[i] = graphlist[i]
-        print(getcoloring(graphdict[i]))
+        print(msintlist(graphdict[i].getcoloring()))
         i += 1
     while len(graphdict) != 0:
         graphdict, isogroup = iteration(graphdict)
@@ -120,11 +119,11 @@ def isomorphicgraphs(graphlist):
     return res
 
 
-def iteration(graphlist):
+def iteration(graphdict):
     """
     Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
     ___
-    :param graphlist:
+    :param graphdict:
     :return:
     """
     indexlist = list(graphdict.keys())
@@ -141,7 +140,7 @@ def iteration(graphlist):
         else:
             nextdict[graphindex] = graph
         i += 1
-    return nextlist, isogroup
+    return nextdict, isogroup
 
 def getcoloringvertex(V):
     """
@@ -155,18 +154,6 @@ def getcoloringvertex(V):
     msintlist(coloring)
     return coloring
 
-def getcoloring(g):
-    """
-    Returns a sorted coloring of graph g
-
-    :param g: graph g
-    :return: sorted coloring of graph g
-    """
-    coloring = []
-    for v in g:
-        coloring.append(v.getcolornum())
-    msintlist(coloring)
-    return coloring
 
 def isbalancedvertex(v, v1):
     """
@@ -179,17 +166,6 @@ def isbalancedvertex(v, v1):
     cv1 = getcoloringvertex(v1)
     return cv == cv1
 
-def isbalanced(g, h):
-    """
-    Returns true if the colorings of graph g, graph h are equal
-
-    :param g: graph g
-    :param h: graph h
-    :return: true if colorings of g and h are equal
-    """
-    cg = getcoloring(g)
-    ch = getcoloring(h)
-    return cg == ch
 
 def definesbijectionvertex(v, v1):
 
@@ -201,42 +177,6 @@ def definesbijectionvertex(v, v1):
                 return False
             i += 1
         return True
-    return False
-
-def definesbijection(g, h):
-    """
-    Return true if graph g and graph h define a bijection
-
-    :param g: graph g
-    :param h: graph h
-    :return: tru if g and h define a bijection
-    """
-    if isbalanced(g, h):
-        i = 0
-        cg = getcoloring(g)
-        while i < len(cg) - 1:
-            if cg[i] == cg[i+1]:
-                return False
-            i += 1
-        return True
-    return False
-
-
-def isomorphic(g, h):
-    """
-    Returns true if graph g and graph h are isomorphic
-
-    It temporarily returns False if graph g and graph h are balanced but not define a bijection
-
-    :param g: graph g
-    :param h: graph h
-    :return: true if g and h are isomorphic
-    """
-    if not isbalanced(g, h):
-        return False
-    elif definesbijection(g, h):
-        return True
-    # todo: return something else when balanced but not bijection!
     return False
 
 
@@ -276,13 +216,17 @@ def refbynbs(g):
     :param g:
     :return g modified:
     """
+    unique_color = set()
     max_color = g.maxcolornum()
     next_color = max_color + 1
     i = 0
     while i <= max_color:
-        v = g.getvwithcolornum(i)
-        if len(v) > 1:
-            g, next_color = herindeel(g, v, next_color)
+        if i not in unique_color:
+            v = g.getvwithcolornum(i)
+            if len(v) == 1:
+                unique_color.add(i)
+            elif len(v) > 1:
+                g, next_color = herindeel(g, v, next_color)
         i += 1
     if next_color != max_color + 1:
         g = refbynbs(g)
@@ -299,17 +243,15 @@ def herindeel(g, v, next_color):
     :param next_color:
     :return g modified, next_color modified:
     """
-    a = v[0]
-    na = a.nbcolornums()
-    msintlist(na)
+    a = v[0].nbcolornums()
+    msintlist(a)
     changed = False
     i = 1
     while i < len(v):
-        b = v[i]
-        nb = b.nbcolornums()
-        msintlist(nb)
-        if na != nb:
-            b.colornum = next_color
+        b = v[i].nbcolornums()
+        msintlist(b)
+        if a != b:
+            v[i].colornum = next_color
             changed = True
         i += 1
     if changed:

@@ -306,3 +306,9 @@ class graph:
         for v in self.V():
             degs.add(v.deg())
         return degs
+
+    def getcoloring(self):
+        coloring = []
+        for v in self:
+            coloring.append(v.getcolornum())
+        return coloring
