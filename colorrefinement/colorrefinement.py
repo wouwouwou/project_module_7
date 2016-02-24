@@ -111,6 +111,7 @@ def isomorphicgraphs(graphlist):
     i = 0
     while i < len(graphlist):
         graphdict[i] = graphlist[i]
+        print(getcoloring(graphdict[i]))
         i += 1
     while len(graphdict) != 0:
         graphdict, isogroup = iteration(graphdict)
@@ -119,7 +120,13 @@ def isomorphicgraphs(graphlist):
     return res
 
 
-def iteration(graphdict):
+def iteration(graphlist):
+    """
+    Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
+    ___
+    :param graphlist:
+    :return:
+    """
     indexlist = list(graphdict.keys())
     minindex = min(indexlist)
     g = graphdict[minindex]
@@ -130,11 +137,11 @@ def iteration(graphdict):
         graphindex = indexlist[i]
         graph = graphdict[graphindex]
         if isomorphic(g, graph):
-            isogroup.append(i)
+            isogroup.append(graphindex)
         else:
             nextdict[graphindex] = graph
         i += 1
-    return nextdict, isogroup
+    return nextlist, isogroup
 
 def getcoloringvertex(V):
     """
@@ -219,7 +226,7 @@ def isomorphic(g, h):
     """
     Returns true if graph g and graph h are isomorphic
 
-    It temporarily can return None if graph g and graph h are balanced but not define a bijection
+    It temporarily returns False if graph g and graph h are balanced but not define a bijection
 
     :param g: graph g
     :param h: graph h
@@ -229,7 +236,8 @@ def isomorphic(g, h):
         return False
     elif definesbijection(g, h):
         return True
-    return basicgraphs.GraphError("Balanced but not bijection!")
+    # todo: return something else when balanced but not bijection!
+    return False
 
 
 def colorrefinement(g):
@@ -245,6 +253,10 @@ def colorrefinement(g):
 
 
 def refbydeg(g):
+    """
+    Gives all the degrees a color value and gives the vertices the color according to their degree
+    :param g:
+    """
     degs = g.degset()
     degcol = dict()
     i = 0
@@ -256,6 +268,14 @@ def refbydeg(g):
 
 
 def refbynbs(g):
+    """
+    Checks for every initially existing color if it has multiple vertices, if a color has multiple vertices it executes
+    herindeel on that same colored group of vertices. When a change has been made during the execution of herindeel
+    (indicated by the max_color value actually not being the max color anymore), refbynbs recurses untill no color
+    changes were made during its run.
+    :param g:
+    :return g modified:
+    """
     max_color = g.maxcolornum()
     next_color = max_color + 1
     i = 0
@@ -270,6 +290,15 @@ def refbynbs(g):
 
 
 def herindeel(g, v, next_color):
+    """
+    Compares vertices with the same color values and differentiates them if they still turn out to be different by
+    giving the vertices with the same value as the first checked vertex the original color and those that differentiate
+    from the first checked vertex the next_color.
+    :param g:
+    :param v:
+    :param next_color:
+    :return g modified, next_color modified:
+    """
     a = v[0]
     na = a.nbcolornums()
     msintlist(na)
