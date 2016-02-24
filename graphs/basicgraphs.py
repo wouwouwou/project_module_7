@@ -300,3 +300,9 @@ class graph:
             if v.colornum > maxcolornum:
                 maxcolornum = v.colornum
         return maxcolornum
+
+    def degset(self):
+        degs = set()
+        for v in self.V():
+            degs.add(v.deg())
+        return degs

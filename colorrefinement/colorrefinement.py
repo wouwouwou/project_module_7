@@ -46,23 +46,34 @@ def isomorphicgraphs(graphlist):
     return res
 
 
-def colorrefinement(G):
-    for v in G.V():
-        v.setcolornum(v.deg() - 1)
-    return checkneighbours(G)
+def colorrefinement(g):
+    refbydeg(g)
+    refbynbs(g)
+    return g
 
 
-def checkneighbours(g):
+def refbydeg(g):
+    degs = g.degset()
+    degcol = dict()
+    i = 0
+    for d in degs:
+        degcol[d] = i
+        i += 1
+    for v in g.V():
+        v.setcolornum(degcol.get(v.deg()))
+
+
+def refbynbs(g):
     max_color = g.maxcolornum()
     next_color = max_color + 1
     i = 1
     while i <= max_color:
         v = g.getvwithcolornum(i)
-        if len(v) != 1:
+        if len(v) > 1:
             g, next_color = herindeel(g, v, next_color)
         i += 1
     if next_color != max_color + 1:
-        g = checkneighbours(g)
+        g = refbynbs(g)
     return g
 
 
