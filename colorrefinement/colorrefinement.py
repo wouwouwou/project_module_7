@@ -19,6 +19,7 @@ def isomorphicgraphs(graphlist):
     i = 0
     while i < len(graphlist):
         graphdict[i] = graphlist[i]
+        print(getcoloring(graphdict[i]))
         i += 1
     while len(graphdict) != 0:
         graphdict, isogroup = iteration(graphdict)
@@ -44,7 +45,7 @@ def iteration(graphlist):
         graphindex = indexlist[i]
         graph = graphdict[graphindex]
         if isomorphic(g, graph):
-            isogroup.append(i)
+            isogroup.append(graphindex)
         else:
             nextdict[graphindex] = graph
         i += 1
@@ -101,7 +102,7 @@ def isomorphic(g, h):
     """
     Returns true if graph g and graph h are isomorphic
 
-    It temporarily can return None if graph g and graph h are balanced but not define a bijection
+    It temporarily returns False if graph g and graph h are balanced but not define a bijection
 
     :param g: graph g
     :param h: graph h
@@ -111,7 +112,8 @@ def isomorphic(g, h):
         return False
     elif definesbijection(g, h):
         return True
-    return basicgraphs.GraphError("Balanced but not bijection!")
+    # todo: return something else when balanced but not bijection!
+    return False
 
 
 def colorrefinement(g):
