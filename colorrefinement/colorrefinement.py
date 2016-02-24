@@ -9,14 +9,14 @@ OUTPUT: A stable coloring ai of G.
 
 
 def isomorphicgraphs(graphlist):
+    res = []
+    while len(graphlist) != 0:
+        graphlist, isogroup = iteration(graphlist)
+        res.append(isogroup)
+    return res
+
     # get the colorings of the graphs in 1 list
-    colorlist = []
-    for g in graphlist:
-        coloring = []
-        for v in g:
-            coloring.append(v.getcolornum())
-        msintlist(coloring)
-        colorlist.append(coloring)
+    colorlist = getcoloringlist(graphlist)
 
     print(colorlist)
 
@@ -44,6 +44,77 @@ def isomorphicgraphs(graphlist):
                 res.append(indexcompare)
         i += 1
     return res
+
+
+def iteration(graphlist):
+    g = graphlist[0]
+    nextlist = []
+    isogroup = [g]
+    i = 1
+    while i < len(graphlist):
+        if isomorphic(g, graphlist[i]):
+            isogroup.append(graphlist[i])
+        else:
+            nextlist.append(graphlist[i])
+
+
+def getcoloringlist(graphlist):
+    coloringlist = []
+    for g in graphlist:
+        coloringlist.append(getcoloring(g))
+    return coloringlist
+
+
+def getcoloring(g):
+    """
+    Returns a sorted coloring of graph g
+    :param g: graph g
+    :return: sorted coloring of graph g
+    """
+    coloring = []
+    for v in g:
+        coloring.append(v.getcolornum())
+    msintlist(coloring)
+    return coloring
+
+
+def isbalanced(g, h):
+    """
+    Returns true if the colorings of graph g, graph h are equal
+    :param g: graph g
+    :param h: graph h
+    :return: true if colorings of g and h are equal
+    """
+    cg = getcoloring(g)
+    ch = getcoloring(h)
+    return cg == ch
+
+
+def definesbijection(g, h):
+    """
+    Return true if graph g and graph h define a bijection
+    :param g: graph g
+    :param h: graph h
+    :return: tru if g and h define a bijection
+    """
+    pass
+
+
+def isomorphic(g, h):
+    """
+    Returns true if graph g and graph h are isomorphic
+
+    It temporarily can return None if graph g and graph h are balanced but not define a bijection
+
+    :param g: graph g
+    :param h: graph h
+    :return: true if g and h are isomorphic
+    """
+    if definesbijection(g, h):
+        return True
+    elif not isbalanced(g, h):
+        return False
+    return None
 
 
 def colorrefinement(g):
