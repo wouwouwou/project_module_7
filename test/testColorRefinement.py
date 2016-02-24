@@ -17,8 +17,12 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
         # Gets the first graph out of the list of graphs
         writeDOT(colorrefinement.disjointunion(l[0][2], l[0][0]), "output.dot")
-        g = colorrefinement.countiso(l[0][2], l[0][0])
-        print(g)
+        r = colorrefinement.countiso(l[0][1], l[0][3])
+        self.assertEqual(r, 1)
+        r = colorrefinement.countiso(l[0][1], l[0][2])
+        self.assertEqual(r, 0)
+        r = colorrefinement.countiso(l[0][0], l[0][2])
+        self.assertEqual(r, 8)
         end = time.time()
         t = end - start
         print("Execution time: " + str(t))

@@ -40,10 +40,9 @@ def getcoloringdict(V):
 def countiso(g, h):
     colorrefinement(g)
     colorrefinement(h)
-    print(g.V())
-    return countisomorphism(g.V(), h.V(), True)
+    return countisomorphism(g.V(), h.V())
 
-def countisomorphism(d, i, first):
+def countisomorphism(d, i):
     """
     Compute the coarsest steble coloring Beta that refines alpha(.V(), i.V())
     :param d:graph
@@ -54,12 +53,10 @@ def countisomorphism(d, i, first):
 
     # If Beta is unbalanced // Reported working.
     if not isbalancedvertex(d, i):
-        print("Unbalanced!")
         return 0
 
     # If Beta defines a bijection
     if definesbijectionvertex(d, i):
-        print("Bijection")
         return 1
 
 
@@ -90,11 +87,9 @@ def countisomorphism(d, i, first):
                 # Temporally set colornum
                 uold = u.getcolornum()
                 u.setcolornum(maxI + 2)
-                num += countisomorphism(d, i, False)
+                num += countisomorphism(d, i)
                 u.setcolornum(uold)
         v.setcolornum(vold)
-    if first:
-        print(num)
     return num
 
 
