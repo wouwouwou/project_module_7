@@ -12,51 +12,23 @@ def isomorphicgraphs(graphlist):
     res = []
     while len(graphlist) != 0:
         graphlist, isogroup = iteration(graphlist)
-        res.append(isogroup)
-    return res
-
-    # get the colorings of the graphs in 1 list
-    colorlist = getcoloringlist(graphlist)
-
-    print(colorlist)
-
-    # loop over the list of colorings
-    res = []
-    i = 0
-    while i < len(colorlist):
-        colorcompare = [colorlist[i]]
-        indexcompare = [i]
-        j = 0
-        while j < len(colorlist):
-            if colorlist[i] == colorlist[j] and i != j:
-                colorcompare.append(colorlist[j])
-                indexcompare.append(j)
-            j += 1
-        if len(indexcompare) != 1:
-            found = False
-            for a in res:
-                msintlist(a)
-                msintlist(indexcompare)
-                if indexcompare == a:
-                    found = True
-                    break
-            if not found:
-                res.append(indexcompare)
-        i += 1
+        if len(isogroup) > 1:
+            res.append(isogroup)
     return res
 
 
 def iteration(graphlist):
     g = graphlist[0]
     nextlist = []
-    isogroup = [g]
+    isogroup = [getcoloring(g)]
     i = 1
     while i < len(graphlist):
         if isomorphic(g, graphlist[i]):
-            isogroup.append(graphlist[i])
+            isogroup.append(getcoloring(graphlist[i]))
         else:
             nextlist.append(graphlist[i])
-
+        i += 1
+    return nextlist, isogroup
 
 def getcoloringlist(graphlist):
     coloringlist = []
@@ -97,7 +69,15 @@ def definesbijection(g, h):
     :param h: graph h
     :return: tru if g and h define a bijection
     """
-    pass
+    if isbalanced(g, h):
+        i = 0
+        cg = getcoloring(g)
+        while i < len(cg) - 1:
+            if cg[i] == cg[i+1]:
+                return False
+            i += 1
+        return True
+    return False
 
 
 def isomorphic(g, h):
@@ -110,10 +90,10 @@ def isomorphic(g, h):
     :param h: graph h
     :return: true if g and h are isomorphic
     """
-    if definesbijection(g, h):
-        return True
-    elif not isbalanced(g, h):
+    if not isbalanced(g, h):
         return False
+    elif definesbijection(g, h):
+        return True
     return None
 
 
