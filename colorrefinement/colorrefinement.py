@@ -259,3 +259,34 @@ def deepcopy(obj):
     if hasattr(obj, '__iter__'):
         return type(obj)(deepcopy(item) for item in obj)
     return obj
+
+
+def pruneandnumberisos(G):
+    color = []
+    index = []
+    counted = []
+    removed = []
+    for vert in G.V():
+        if len(color) > 0:
+            for i in range(len(color)):
+                if vert.colornum == color[i]:
+                    G.V().remove(vert)
+                    counted[i] += 1
+                    if not removed[i]:
+                        G.V().remove(index[i])
+                        removed[i] = True
+                else:
+                    color.append(vert.colornum)
+                    index.append(vert)
+                    removed.append(False)
+                    counted.append(1)
+        else:
+            color.append(vert.colornum)
+            index.append(vert)
+            removed.append(False)
+            counted.append(1)
+    isocount = 1
+    for mult in counted:
+        isocount *= mult
+    return G, isocount
+
