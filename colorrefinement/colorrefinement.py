@@ -11,7 +11,7 @@ Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
 
 def disjointunion(g: graph, h: graph):
     """
-    Create a disjoint union of two graphs.
+    Create a disjoint union of two graphs and gives the result a coloring.
     :param g: The first graph
     :param h: The second graph
     :return: The two graphs combined
@@ -27,6 +27,7 @@ def disjointunion(g: graph, h: graph):
     colorrefinement(f)
     return f
 
+
 def getcoloringdict(V):
     resultdict = dict()
     maximum = 0
@@ -37,14 +38,16 @@ def getcoloringdict(V):
         maximum = max(maximum, v.getcolornum())
     return resultdict, maximum
 
+
 def countiso(g, h):
     colorrefinement(g)
     colorrefinement(h)
     return countisomorphism(g.V(), h.V())
 
+
 def countisomorphism(d, i):
     """
-    Compute the coarsest steble coloring Beta that refines alpha(.V(), i.V())
+    Compute the coarsest stable coloring Beta that refines alpha(.V(), i.V())
     :param d:graph
     :param i:graph
     :return:
@@ -59,7 +62,6 @@ def countisomorphism(d, i):
     if definesbijectionvertex(d, i):
         return 1
 
-
     coloringdictD, maxD = getcoloringdict(d)
     coloringdictI, maxI = getcoloringdict(i)
 
@@ -71,7 +73,6 @@ def countisomorphism(d, i):
     for a in possibleclasses:
         b = a
         break
-
 
     for u in d:
         if u.getcolornum() == b:
@@ -105,7 +106,9 @@ def isomorphicgraphs(graphlist):
     i = 0
     while i < len(graphlist):
         graphdict[i] = graphlist[i]
-        print(msintlist(graphdict[i].getcoloring()))
+        c = graphdict[i].getcoloring()
+        msintlist(c)
+        print(c)
         i += 1
     while len(graphdict) != 0:
         graphdict, isogroup = iteration(graphdict)
@@ -252,6 +255,7 @@ def herindeel(g, v, next_color):
     if changed:
         next_color += 1
     return g, next_color
+
 
 def deepcopy(obj):
     if isinstance(obj, dict):

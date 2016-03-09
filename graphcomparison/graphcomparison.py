@@ -16,6 +16,8 @@ def isbalanced(g, h):
     """
     cg = g.getcoloring()
     ch = h.getcoloring()
+    msintlist(cg)
+    msintlist(ch)
     return cg == ch
 
 
@@ -30,6 +32,7 @@ def definesbijection(g, h):
     if isbalanced(g, h):
         i = 0
         cg = g.getcoloring()
+        msintlist(cg)
         while i < len(cg) - 1:
             if cg[i] == cg[i+1]:
                 return False
