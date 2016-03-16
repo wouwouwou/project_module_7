@@ -16,9 +16,12 @@ def isbalanced(g, h):
     """
     cg = g.getcoloring()
     ch = h.getcoloring()
-    msintlist(cg)
-    msintlist(ch)
-    return cg == ch
+    if cg.len() != ch.len():
+        return False
+    for c in cg:
+        if len(cg[c]) != len(ch[c]):
+            return False
+    return True
 
 
 def definesbijection(g, h):
@@ -29,16 +32,14 @@ def definesbijection(g, h):
     :param h: graph h
     :return: tru if g and h define a bijection
     """
-    if isbalanced(g, h):
-        i = 0
-        cg = g.getcoloring()
-        msintlist(cg)
-        while i < len(cg) - 1:
-            if cg[i] == cg[i+1]:
-                return False
-            i += 1
-        return True
-    return False
+    if not isbalanced(g, h):
+        return False
+    cg = g.getcoloring()
+    ch = h.getcoloring()
+    for c in cg:
+        if len(cg[c]) != 1 and len(ch[c]) != 1:
+            return False
+    return True
 
 
 def isomorphic(g, h):
@@ -65,8 +66,5 @@ def countautomorphisms(g):
     :param g:
     :return:
     """
-    res = -1
-    colorrefinement(g)
-    if definesbijection(g, g):
-        res = 1
-    return res
+    # todo implement this again
+    pass
