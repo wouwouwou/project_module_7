@@ -41,7 +41,6 @@ class vertex:
         """
         self._graph = graph
         self._label = label
-        self.colornum = 0
         self._inclist = []
 
     def __repr__(self):
@@ -59,23 +58,11 @@ class vertex:
     def setlabel(self, label):
         self._label = label
 
-    def getcolornum(self):
-        return self.colornum
-
-    def setcolornum(self, colornum):
-        self.colornum = colornum
-
     def getinclist(self):
         return self._inclist
 
     def setinclist(self, inclist):
         self._inclist = inclist
-
-    def nbcolornums(self):
-        colornums = []
-        for v in self.nbs():
-            colornums.append(v.colornum)
-        return colornums
 
     def adj(self, other):
         """
@@ -295,37 +282,15 @@ class graph:
             return True
 
     def getvwithcolornum(self, colornum):
-        vs = []
-        for v in self.V():
-            if v.colornum == colornum:
-                vs.append(v)
-        return vs
+        # todo implement this again
+        pass
 
     def maxcolornum(self):
-        maxcolornum = 0
-        for v in self.V():
-            if v.colornum > maxcolornum:
-                maxcolornum = v.colornum
-        return maxcolornum
+        # todo implement this again
+        pass
 
     def degset(self):
         degs = set()
         for v in self.V():
             degs.add(v.deg())
         return degs
-
-    """
-    def getcoloring(self):
-        coloring = []
-        for v in self:
-            coloring.append(v.getcolornum())
-        return coloring
-    """
-
-    def getcolordict(self):
-        resultdict = dict()
-        for v in self.V():
-            if resultdict.get(v.getcolornum()) is None:
-                resultdict[v.getcolornum()] = set()
-            resultdict[v.getcolornum()].add(v)
-        return resultdict

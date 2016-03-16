@@ -1,3 +1,4 @@
+from colorrefinement.hopcraft import hopcraft
 from graphcomparison.graphcomparison import *
 
 """
@@ -70,7 +71,7 @@ def disjointunionvertices(d, i):
             if e.tail() == v:
                 f.addedge(f[i], f[combinedlist.index(e.head())])
 
-    refbynbs(f)
+    colorrefinement(f)
     return f
 
 
@@ -100,7 +101,7 @@ def makegraphfromvertices(d):
             if e.tail() == v:
                 g.addedge(g[i], g[d.index(e.head())])
 
-    refbynbs(g)
+    colorrefinement(g)
 
     return g
 
@@ -220,53 +221,7 @@ def colorrefinement(g):
     :param g: graph g
     :return: graph g with stable coloring
     """
-    refbydeg(g)
-    refbynbs(g)
-    return g
-
-
-def refbydeg(g):
-    """
-    Gives all the degrees a color value and gives the vertices the color according to their degree
-    :param g:
-    """
-    if g.getcoloring():
-        raise Exception("This graph already has a coloring!")
-    degs = g.degset()
-    degcol = dict()
-    i = 0
-    for d in degs:
-        degcol[d] = i
-        i += 1
-    for v in g.V():
-        v.setcolornum(degcol.get(v.deg()))
-
-
-def refbynbs(g):
-    """
-    Checks for every initially existing color if it has multiple vertices, if a color has multiple vertices it executes
-    herindeel on that same colored group of vertices. When a change has been made during the execution of herindeel
-    (indicated by the max_color value actually not being the max color anymore), refbynbs recurses untill no color
-    changes were made during its run.
-    :param g:
-    :return g modified:
-    """
-    if not g.getcoloring():
-        raise Exception("This graph does not have a coloring yet. Add one!")
-    unique_color = set()
-    max_color = g.maxcolornum()
-    next_color = max_color + 1
-    i = 0
-    while i <= max_color:
-        if i not in unique_color:
-            v = g.getvwithcolornum(i)
-            if len(v) == 1:
-                unique_color.add(i)
-            elif len(v) > 1:
-                g, next_color = herindeel(g, v, next_color)
-        i += 1
-    if next_color != max_color + 1:
-        g = refbynbs(g)
+    g.setcoloring(hopcraft(g))
     return g
 
 
