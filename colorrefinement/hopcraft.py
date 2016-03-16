@@ -1,4 +1,7 @@
 import unittest
+
+import math
+
 from graphs.graphIO import loadgraph
 import time
 from graphs.basicgraphs import graph
@@ -21,11 +24,14 @@ def neighbourlist(g: graph, directed=False):
     return result
 
 
-def hopcraft(g: graph):
+def hopcraft(g: graph, smallestpartition=True):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
+     This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.
      @see https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft.27s_algorithm
-     :param g:
+     @see https://riunet.upv.es/bitstream/handle/10251/27623/partial%20rev%20determ.pdf?sequence=1 Algorithm 6.1
+     :param smallestpartition: Select the smallest partition to refine first.
+     :param g: The graph
     """
     neighbours = neighbourlist(g, g.isdirected())
 
@@ -33,18 +39,30 @@ def hopcraft(g: graph):
     p = []
 
     # degrees := {1: p1, 2: p2, ..., n: pn} met px = {v1, v2, ..., vk}
-    for v in g.V():
-        degree = len(neighbours[v])
-        if degree not in degrees.keys():
-            degrees[degree] = set()
-        degrees[degree].add(v)
+    if not g.getcoloring():
+        for v in g.V():
+            degree = len(neighbours[v])
+            if degree not in degrees.keys():
+                degrees[degree] = set()
+            degrees[degree].add(v)
+    else:
+        degrees = g.getcoloring()
 
     # p := {p1, p2, ..., pn}
     for k in degrees:
         p.append(degrees[k])
 
-    # W := {p1}
-    w = {0}
+    if smallestpartition:
+        # Use the smallest partition first
+        sp = math.inf
+        for pn in p:
+            sp = min(sp, len(pn))
+
+        w = {sp}
+    else:
+        # Just take the first partition
+        w = {0}
+
     while w:
         # Choose and remove a set A from W
         an = w.pop()
@@ -82,7 +100,6 @@ def hopcraft(g: graph):
     for pN in range(len(p)):
         coloring[pN] = p[pN]
 
-    print(coloring)
     return coloring
 
 
@@ -91,13 +108,30 @@ class TestColorRefinement(unittest.TestCase):
         start = time.time()
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
-        l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
         # Gets the first graph out of the list of graphs
-        hopcraft(l[0][1])
+        for _ in range(15):
+            hopcraft(l[0][1], True)
+
+        end = time.time()
+        t = end - start
+        print("Execution time: " + str(t))
+
+        start = time.time()
+
+        # Load a Python tuple of length 2, where the first element is a list of Graphs.
+        # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # Gets the first graph out of the list of graphs
+        for _ in range(15):
+            hopcraft(l[0][1], False)
 
         end = time.time()
         t = end - start
