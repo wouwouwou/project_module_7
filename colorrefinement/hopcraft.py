@@ -3,11 +3,14 @@ from graphs.graphIO import loadgraph
 import time
 from graphs.basicgraphs import graph
 
-"""
-    Generate an incoming list for given vertices.
-    Set directed to True if the graph is directed.
-"""
+
 def neighbourlist(g: graph, directed=False):
+    """
+     Generate an incoming list for given vertices.
+     Set directed to True if the graph is directed.
+     :param directed:
+     :param g:
+    """
     result = dict()
     for v in g.V():
         result[v] = set()
@@ -17,11 +20,13 @@ def neighbourlist(g: graph, directed=False):
             result[e.head()].add(e.tail())
     return result
 
-"""
-    Generate a Minimum DFA as described by the Hopcroft's algorithm
-    @see https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft.27s_algorithm
-"""
+
 def hopcraft(g: graph):
+    """
+     Generate a Minimum DFA as described by the Hopcroft's algorithm
+     @see https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft.27s_algorithm
+     :param g:
+    """
     neighbours = neighbourlist(g, g.isdirected())
 
     degrees = dict()
@@ -42,8 +47,8 @@ def hopcraft(g: graph):
     w = {0}
     while w:
         # Choose and remove a set A from W
-        aN = w.pop()
-        a = p[aN]
+        an = w.pop()
+        a = p[an]
 
         # Iterate for each degree in degrees
         for degree in degrees:
@@ -79,7 +84,6 @@ def hopcraft(g: graph):
 
     print(coloring)
     return coloring
-
 
 
 class TestColorRefinement(unittest.TestCase):
