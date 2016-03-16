@@ -57,3 +57,16 @@ def isomorphic(g, h):
         return True
     # todo: return something else when balanced but not bijection!
     return False
+
+
+def countautomorphisms(g):
+    """
+    Counts automorphisms of a graph. Should return 1 <= n <= n! where n is amount of vertices en the graph
+    :param g:
+    :return:
+    """
+    res = -1
+    colorrefinement(g)
+    if definesbijection(g, g):
+        res = 1
+    return res

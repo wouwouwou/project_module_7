@@ -1,7 +1,3 @@
-from graphs import graphIO
-from graphs import basicgraphs
-from sortingalgorithms.mergesort import *
-from graphs.basicgraphs import graph
 from graphcomparison.graphcomparison import *
 
 """
@@ -9,13 +5,50 @@ Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
 """
 
 
-def disjointunion(g: graph, h: graph):
+def definesbijectionvertex(v, v1):
+    if isbalancedvertex(v, v1):
+        i = 0
+        cv = getcoloringvertex(v)
+        while i < len(cv) - 1:
+            if cv[i] == cv[i + 1]:
+                return False
+            i += 1
+        return True
+    return False
+
+
+def isbalancedvertex(v, v1):
     """
-    Create a disjoint union of two graphs and gives the result a coloring.
-    :param g: The first graph
-    :param h: The second graph
-    :return: The two graphs combined
+     Returns true if the colorings of vertices v, vertices v1 are equal.
+     :param v: vertices
+     :param v1: vertices
+     :return: true if colorings of v and v1 are equal
     """
+    cv = getcoloringvertex(v)
+    cv1 = getcoloringvertex(v1)
+    return cv == cv1
+
+
+def getcoloringvertex(v):
+    """
+     Returns a sorted coloring of vertices v
+     :param v: vertices v
+     :return: sorted coloring of vertices v
+    """
+    coloring = []
+    for v in v:
+        coloring.append(v.getcolornum())
+    msintlist(coloring)
+    return coloring
+
+
+def disjointuniongraphs(g: graph, h: graph):
+    """
+     Create a disjoint union of two graphs.
+     :param g: The first graph
+     :param h: The second graph
+     :return: The two graphs combined
+     """
     f = graph(len(g.V()) + len(h.V()))
     combinedlist = g.V() + h.V()
     for i in range(len(combinedlist)):
@@ -28,10 +61,23 @@ def disjointunion(g: graph, h: graph):
     return f
 
 
-def getcoloringdict(V):
+def disjointunionvertices(d, i):
+    f = graph(len(d) + len(i))
+    combinedlist = d + i
+    for i in range(len(combinedlist)):
+        v = combinedlist[i]
+        for e in v.getinclist():
+            if e.tail() == v:
+                f.addedge(f[i], f[combinedlist.index(e.head())])
+
+    refbynbs(f)
+    return f
+
+
+def getcoloringdict(v):
     resultdict = dict()
     maximum = 0
-    for v in V:
+    for v in v:
         if resultdict.get(v.getcolornum()) is None:
             resultdict[v.getcolornum()] = set()
         resultdict[v.getcolornum()].add(v)
@@ -45,52 +91,78 @@ def countiso(g, h):
     return countisomorphism(g.V(), h.V())
 
 
+def makegraphfromvertices(d):
+    g = graph(len(d))
+    for i in range(len(d)):
+        v = d[i]
+        g.V()[i].setcolornum(d[i].getcolornum())
+        for e in v.getinclist():
+            if e.tail() == v:
+                g.addedge(g[i], g[d.index(e.head())])
+
+    refbynbs(g)
+
+    return g
+
+
 def countisomorphism(d, i):
     """
-    Compute the coarsest stable coloring Beta that refines alpha(.V(), i.V())
-    :param d:graph
-    :param i:graph
-    :return:
-    """
+     Compute the coarsest stable coloring Beta that refines alpha(g.V(), h.V())
+     :param d: vertices of graph g
+     :param i: vertices of graph h
+     :return:
+     """
     # Refine both graphs prior processing // Reported working.
+    s = d[:]
+    t = i[:]
+    g = makegraphfromvertices(s)
+    h = makegraphfromvertices(t)
+
+    q = g.getcoloring()
+    msintlist(q)
+    print(q)
+    q = h.getcoloring()
+    msintlist(q)
+    print(q)
 
     # If Beta is unbalanced // Reported working.
-    if not isbalancedvertex(d, i):
+    if not isbalanced(g, h):
         return 0
 
     # If Beta defines a bijection
-    if definesbijectionvertex(d, i):
+    if definesbijection(g, h):
         return 1
 
-    coloringdictD, maxD = getcoloringdict(d)
-    coloringdictI, maxI = getcoloringdict(i)
+    coloringdictg = g.getcolordict()
+    coloringdictt = h.getcolordict()
 
     possibleclasses = set()
-    for c in coloringdictD:
-        if len(coloringdictD[c]) >= 2 and len(coloringdictI[c]) >= 2:
+    for c in coloringdictg:
+        if len(coloringdictg[c]) >= 2 and len(coloringdictt[c]) >= 2:
             possibleclasses.add(c)
 
     for a in possibleclasses:
         b = a
         break
 
-    for u in d:
+    for u in s:
         if u.getcolornum() == b:
-            v = u
+            x = u
+        if x == u:
+            break
 
     num = 0
-    # Temporally set color num
-    if possibleclasses.__contains__(v.getcolornum()):
-        vold = v.getcolornum()
-        v.setcolornum(maxD + 2)
-        for u in i:
-            if possibleclasses.__contains__(u.getcolornum()):
+    if possibleclasses.__contains__(x.getcolornum()):
+        xold = x.getcolornum()
+        x.setcolornum(g.maxcolornum() + 1)
+        for y in t:
+            if possibleclasses.__contains__(y.getcolornum()):
                 # Temporally set colornum
-                uold = u.getcolornum()
-                u.setcolornum(maxI + 2)
-                num += countisomorphism(d, i)
-                u.setcolornum(uold)
-        v.setcolornum(vold)
+                yold = y.getcolornum()
+                y.setcolornum(h.maxcolornum() + 1)
+                num += countisomorphism(s, t)
+                y.setcolornum(yold)
+        x.setcolornum(xold)
     return num
 
 
@@ -140,43 +212,6 @@ def iteration(graphdict):
         i += 1
     return nextdict, isogroup
 
-def getcoloringvertex(V):
-    """
-    Returns a sorted coloring of vertices v
-    :param v: vertices v
-    :return: sorted coloring of vertices v
-    """
-    coloring = []
-    for v in V:
-        coloring.append(v.getcolornum())
-    msintlist(coloring)
-    return coloring
-
-
-def isbalancedvertex(v, v1):
-    """
-    Returns true if the colorings of vertices v, vertices v1 are equal.
-    :param v: vertices
-    :param v1: vertices
-    :return: true if colorings of v and v1 are equal
-    """
-    cv = getcoloringvertex(v)
-    cv1 = getcoloringvertex(v1)
-    return cv == cv1
-
-
-def definesbijectionvertex(v, v1):
-
-    if isbalancedvertex(v, v1):
-        i = 0
-        cv = getcoloringvertex(v)
-        while i < len(cv) - 1:
-            if cv[i] == cv[i+1]:
-                return False
-            i += 1
-        return True
-    return False
-
 
 def colorrefinement(g):
     """
@@ -195,6 +230,8 @@ def refbydeg(g):
     Gives all the degrees a color value and gives the vertices the color according to their degree
     :param g:
     """
+    if g.getcoloring():
+        raise Exception("This graph already has a coloring!")
     degs = g.degset()
     degcol = dict()
     i = 0
@@ -214,6 +251,8 @@ def refbynbs(g):
     :param g:
     :return g modified:
     """
+    if not g.getcoloring():
+        raise Exception("This graph does not have a coloring yet. Add one!")
     unique_color = set()
     max_color = g.maxcolornum()
     next_color = max_color + 1
@@ -257,12 +296,14 @@ def herindeel(g, v, next_color):
     return g, next_color
 
 
+"""
 def deepcopy(obj):
     if isinstance(obj, dict):
         return {deepcopy(key): deepcopy(value) for key, value in obj.items()}
     if hasattr(obj, '__iter__'):
         return type(obj)(deepcopy(item) for item in obj)
     return obj
+"""
 
 
 def pruneandnumberisos(G):
@@ -293,4 +334,3 @@ def pruneandnumberisos(G):
     for mult in counted:
         isocount *= mult
     return G, isocount
-

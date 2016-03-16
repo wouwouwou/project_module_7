@@ -181,6 +181,7 @@ class graph:
         # handle directed graphs.
         self._simple = simple
         self._nextlabel = 0
+        self._coloring = dict()
         for i in range(n):
             self.addvertex()
 
@@ -211,6 +212,12 @@ class graph:
         this is not related to the vertex labels.
         """
         return self._V[i]
+
+    def getcoloring(self):
+        return self._coloring
+
+    def setcoloring(self, a):
+        self._coloring = a
 
     def isdirected(self):
         """
@@ -307,8 +314,18 @@ class graph:
             degs.add(v.deg())
         return degs
 
+    """
     def getcoloring(self):
         coloring = []
         for v in self:
             coloring.append(v.getcolornum())
         return coloring
+    """
+
+    def getcolordict(self):
+        resultdict = dict()
+        for v in self.V():
+            if resultdict.get(v.getcolornum()) is None:
+                resultdict[v.getcolornum()] = set()
+            resultdict[v.getcolornum()].add(v)
+        return resultdict
