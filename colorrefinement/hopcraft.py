@@ -2,7 +2,7 @@ import unittest
 
 import math
 
-from graphs.graphIO import loadgraph
+from graphs.graphIO import loadgraph, writeDOT
 import time
 from graphs.basicgraphs import graph
 
@@ -33,12 +33,16 @@ def hopcraft(g: graph, smallestpartition=True):
      :param smallestpartition: Select the smallest partition to refine first.
      :param g: The graph
     """
+
+    # TODO: Ignore all vertices with v.nbx() == 0 (unreachable states)
+
     neighbours = neighbourlist(g, g.isdirected())
 
     degrees = dict()
     p = []
 
     # degrees := {1: p1, 2: p2, ..., n: pn} met px = {v1, v2, ..., vk}
+
     if not g.getcoloring():
         for v in g.V():
             degree = len(neighbours[v])
@@ -52,16 +56,10 @@ def hopcraft(g: graph, smallestpartition=True):
     for k in degrees:
         p.append(degrees[k])
 
-    if smallestpartition:
-        # Use the smallest partition first
-        sp = math.inf
-        for pn in p:
-            sp = min(sp, len(pn))
-
-        w = {sp}
-    else:
-        # Just take the first partition
-        w = {0}
+    w = set()
+    for pn in range(len(p)):
+       if pn != len(p) - 1:
+           w.add(pn)
 
     while w:
         # Choose and remove a set A from W
@@ -109,17 +107,18 @@ class TestColorRefinement(unittest.TestCase):
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        #l = loadgraph('../test_grafen/gerbensgraph', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
-        l = loadgraph('../test_grafen/torus24.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # Gets the first graph out of the list of graphs
         for _ in range(1):
-            hopcraft(l[0][0], False)
+            print(hopcraft(l[0][0], False))
 
         end = time.time()
         t = end - start
+        writeDOT(l[0][0], "output.dot")
         print("Execution time: " + str(t))
 
 
