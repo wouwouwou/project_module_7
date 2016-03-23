@@ -1,9 +1,66 @@
-from graphs import graphIO
-from graphs import basicgraphs
-from sortingalgorithms.mergesort import *
-from graphs.basicgraphs import *
-from colorrefinement import *
-from colorrefinement.colorrefinement import *
+def processgraphlist(graphlist):
+    # todo      question: do single graphs have to be included? Do we have to get the number of
+    # todo      automorphisms from this graph to itself?
+    res = dict()
+    graphdict = dict()
+    i = 0
+    while i < len(graphlist):
+        graphdict[i] = graphlist[i]
+        i += 1
+    while len(graphdict) != 0:
+        graphdict, isogroup, aut = processing(graphdict)
+        res[isogroup] = aut
+
+    # prints to standardout the isogroup and #aut in that group
+    for isogroup in list(res.keys()):
+        print(str(isogroup) + " " + str(res[isogroup]) + "\n")
+
+
+def processing(graphdict):
+    indexlist = list(graphdict.keys())
+    minindex = min(indexlist)
+    g = graphdict[minindex]
+    nextdict = dict()
+    isogroup = [minindex]
+    aut = -1
+    i = 1
+    while i < len(indexlist):
+        graphindex = indexlist[i]
+        graph = graphdict[graphindex]
+        isomorph = False
+
+        # if aut == -1 then we have to test all the conditions.
+        if aut == -1:
+            if definesbijection(g, graph):
+                isomorph = True
+                aut = 1
+            elif not isbalanced(g, graph):
+                pass
+            else:
+                aut = countautomorphisms(g, graph)
+                isomorph = True
+
+        # if aut == 1 we only have to check if the graphs define a bijection
+        elif aut == 1:
+            if definesbijection(g, graph):
+                isomorph = True
+
+        # if aut > 1 we have to branch, but only to check if the graphs are isomorphic
+        elif aut > 1:
+            isomorph = isomorphicbranching(g, graph)
+
+        # another value for aut is not accepted!
+        else:
+            raise Exception("aut is not valid!")
+
+        if isomorph:
+            isogroup.append(graphindex)
+        else:
+            nextdict[graphindex] = graph
+
+        i += 1
+
+    return nextdict, isogroup, aut
 
 
 def isbalanced(g, h):
@@ -16,7 +73,7 @@ def isbalanced(g, h):
     """
     cg = g.getcoloring()
     ch = h.getcoloring()
-    if cg.len() != ch.len():
+    if len(list(cg.keys())) != len(list(ch.keys())):
         return False
     for c in cg:
         if len(cg[c]) != len(ch[c]):
@@ -40,24 +97,6 @@ def definesbijection(g, h):
         if len(cg[c]) != 1 and len(ch[c]) != 1:
             return False
     return True
-
-
-def isomorphic(g, h):
-    """
-    Returns true if graph g and graph h are isomorphic
-
-    It temporarily returns False if graph g and graph h are balanced but not define a bijection
-
-    :param g: graph g
-    :param h: graph h
-    :return: true if g and h are isomorphic
-    """
-    if not isbalanced(g, h):
-        return False
-    elif definesbijection(g, h):
-        return True
-    # todo: return something else when balanced but not bijection!
-    return False
 
 
 def countautomorphisms(g):
