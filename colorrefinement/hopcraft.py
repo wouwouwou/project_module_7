@@ -6,7 +6,6 @@ from graphs.graphIO import loadgraph, writeDOT
 import time
 from graphs.basicgraphs import graph
 
-
 def neighbourlist(g: graph, directed=False):
     """
      Generate an incoming list for given vertices.
@@ -100,6 +99,13 @@ def hopcraft(g: graph, smallestpartition=True):
 
     return coloring
 
+def fastautomorphismcount(g: graph):
+    coloring = hopcraft(g, False)
+    isomorphisms = 1
+    for cl in range(len(coloring)):
+        isomorphisms *= len(coloring[cl])
+    return isomorphisms
+
 
 class TestColorRefinement(unittest.TestCase):
     def testIsomorphismCount(self):
@@ -110,11 +116,13 @@ class TestColorRefinement(unittest.TestCase):
         #l = loadgraph('../test_grafen/gerbensgraph', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # l = loadgraph('../test_grafen/threepaths10240.gr', readlist=True)
         # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
+        l = loadgraph('../test_grafen/trees90.grl', readlist=True)
         # Gets the first graph out of the list of graphs
         for _ in range(1):
             print(hopcraft(l[0][0], False))
+            print(fastautomorphismcount(l[0][0]))
 
         end = time.time()
         t = end - start
