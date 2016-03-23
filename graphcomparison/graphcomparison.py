@@ -1,11 +1,3 @@
-from graphs import graphIO
-from graphs import basicgraphs
-from sortingalgorithms.mergesort import *
-from graphs.basicgraphs import *
-from colorrefinement import *
-from colorrefinement.colorrefinement import *
-
-
 def isbalanced(g, h):
     """
     Returns true if the colorings of graph g, graph h are equal
@@ -16,7 +8,7 @@ def isbalanced(g, h):
     """
     cg = g.getcoloring()
     ch = h.getcoloring()
-    if cg.len() != ch.len():
+    if len(list(cg.keys())) != len(list(ch.keys())):
         return False
     for c in cg:
         if len(cg[c]) != len(ch[c]):
@@ -58,6 +50,75 @@ def isomorphic(g, h):
         return True
     # todo: return something else when balanced but not bijection!
     return False
+
+
+def processgraphlist(graphlist):
+    # todo      question: do single graphs have to be included? Do we have to get the number of
+    # todo      automorphisms from this graph to itself?
+    res = dict()
+    graphdict = dict()
+    i = 0
+    while i < len(graphlist):
+        graphdict[i] = graphlist[i]
+        i += 1
+    while len(graphdict) != 0:
+        graphdict, isogroup, aut = processing(graphdict)
+        res[isogroup] = aut
+
+    # prints to standardout the isogroup and #aut in that group
+    for isogroup in list(res.keys()):
+        print(str(isogroup) + " " + str(res[isogroup]) + "\n")
+
+
+def processing(graphdict):
+    indexlist = list(graphdict.keys())
+    minindex = min(indexlist)
+    g = graphdict[minindex]
+    nextdict = dict()
+    isogroup = [minindex]
+    aut = -1
+    i = 1
+    while i < len(indexlist):
+        graphindex = indexlist[i]
+        graph = graphdict[graphindex]
+
+        if aut == -1:
+            isomorph, aut = processgraphs(g, graph)
+        else:
+            isomorph = isisomorphic(g, graph)
+
+        if isomorph:
+            isogroup.append(graphindex)
+        else:
+            nextdict[graphindex] = graph
+
+        i += 1
+
+    return nextdict, isogroup, aut
+
+
+def iteration(graphdict):
+    """
+    Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
+    ___
+    :param graphdict:
+    :return:
+    """
+    indexlist = list(graphdict.keys())
+    minindex = min(indexlist)
+    g = graphdict[minindex]
+    nextdict = dict()
+    isogroup = [minindex]
+    i = 1
+    while i < len(indexlist):
+        graphindex = indexlist[i]
+        graph = graphdict[graphindex]
+        if isomorphic(g, graph):
+            isogroup.append(graphindex)
+        else:
+            nextdict[graphindex] = graph
+        i += 1
+    return nextdict, isogroup
 
 
 def countautomorphisms(g):

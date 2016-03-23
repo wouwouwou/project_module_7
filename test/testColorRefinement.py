@@ -1,8 +1,9 @@
-import unittest
-from graphs import basicgraphs
-from graphs.graphIO import loadgraph, writeDOT, savegraph
-from colorrefinement import colorrefinement
 import time
+import unittest
+
+from colorrefinement import colorrefinement
+from graphcomparison.graphcomparison import processgraphlist
+from graphs.graphIO import loadgraph, writeDOT
 
 
 class TestColorRefinement(unittest.TestCase):
@@ -67,11 +68,14 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         graphlist = l[0]
         i = 0
+        res = []
         for g in graphlist:
             colorrefinement.colorrefinement(g)
-        print(colorrefinement.isomorphicgraphs(graphlist))
+            print(g.getcoloring())
+        processgraphlist(graphlist)
 
         end = time.time()
         t = end - start

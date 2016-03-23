@@ -24,7 +24,7 @@ def neighbourlist(g: graph, directed=False):
     return result
 
 
-def hopcraft(g: graph, smallestpartition=True):
+def hopcraft(g: graph, smallestpartition=False):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
      This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.

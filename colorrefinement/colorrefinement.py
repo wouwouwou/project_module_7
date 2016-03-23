@@ -1,5 +1,7 @@
 from colorrefinement.hopcraft import hopcraft
-from graphcomparison.graphcomparison import *
+from graphcomparison.graphcomparison import isbalanced, definesbijection
+from graphs.basicgraphs import graph
+from sortingalgorithms.mergesort import msintlist
 
 """
 Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
@@ -165,53 +167,6 @@ def countisomorphism(d, i):
                 y.setcolornum(yold)
         x.setcolornum(xold)
     return num
-
-
-def isomorphicgraphs(graphlist):
-    """
-    Return a list of the indices of the graphs which are isomorphic to each other
-
-    :param graphlist: a list of graphs
-    :return: a list of indices of the graphs which are isomorphic to each other
-    """
-    res = []
-    graphdict = dict()
-    i = 0
-    while i < len(graphlist):
-        graphdict[i] = graphlist[i]
-        c = graphdict[i].getcoloring()
-        msintlist(c)
-        print(c)
-        i += 1
-    while len(graphdict) != 0:
-        graphdict, isogroup = iteration(graphdict)
-        if len(isogroup) > 1:
-            res.append(isogroup)
-    return res
-
-
-def iteration(graphdict):
-    """
-    Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
-    ___
-    :param graphdict:
-    :return:
-    """
-    indexlist = list(graphdict.keys())
-    minindex = min(indexlist)
-    g = graphdict[minindex]
-    nextdict = dict()
-    isogroup = [minindex]
-    i = 1
-    while i < len(indexlist):
-        graphindex = indexlist[i]
-        graph = graphdict[graphindex]
-        if isomorphic(g, graph):
-            isogroup.append(graphindex)
-        else:
-            nextdict[graphindex] = graph
-        i += 1
-    return nextdict, isogroup
 
 
 def colorrefinement(g):
