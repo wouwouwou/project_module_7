@@ -1,12 +1,12 @@
 Input: Graph G = (V, E)
 Output: Stable coloring a of G
 
-Let <i>degrees</i> be a dictionary that, given a degree, returns all vertices that have that degree  {0: [u1, ..., ux], ..., n: [v1, ..., vy]};
-P := {F0, F1, F2, ... Fn};
-W := {F0, F1, F2, ... Fn-1};
+D := {'degree': [vertices]} = {0: [u1, ..., ux], ..., n: [v1, ..., vy]};
+P := {V0, V1, V2, ... Vn};
+W := {V0, V1, V2, ... Vn-1};
 while (W is not empty) do
      choose and remove a set A from W
-     for all degrees as degree do:
+     for all D as degree do:
           let X be the set of states for which a transition on degree leads to a state in A
           for each set Y in P for which X ∩ Y is nonempty and Y \ X is nonempty do
                replace Y in P by the two sets X ∩ Y and Y \ X
