@@ -27,11 +27,31 @@ def processing(graphdict):
     while i < len(indexlist):
         graphindex = indexlist[i]
         graph = graphdict[graphindex]
+        isomorph = False
 
+        # if aut == -1 then we have to test all the conditions.
         if aut == -1:
-            isomorph, aut = processgraphs(g, graph)
+            if definesbijection(g, graph):
+                isomorph = True
+                aut = 1
+            elif not isbalanced(g, graph):
+                pass
+            else:
+                aut = countautomorphisms(g, graph)
+                isomorph = True
+
+        # if aut == 1 we only have to check if the graphs define a bijection
+        elif aut == 1:
+            if definesbijection(g, graph):
+                isomorph = True
+
+        # if aut > 1 we have to branch, but only to check if the graphs are isomorphic
+        elif aut > 1:
+            isomorph = isomorphicbranching(g, graph)
+
+        # another value for aut is not accepted!
         else:
-            isomorph = isomorphic(g, graph)
+            raise Exception("aut is not valid!")
 
         if isomorph:
             isogroup.append(graphindex)
@@ -41,24 +61,6 @@ def processing(graphdict):
         i += 1
 
     return nextdict, isogroup, aut
-
-
-def isomorphic(g, h):
-    """
-    Returns true if graph g and graph h are isomorphic
-
-    It temporarily returns False if graph g and graph h are balanced but not define a bijection
-
-    :param g: graph g
-    :param h: graph h
-    :return: true if g and h are isomorphic
-    """
-    if not isbalanced(g, h):
-        return False
-    elif definesbijection(g, h):
-        return True
-    # todo: implement individualisation refinement for finding an isomorphism
-    return False
 
 
 def isbalanced(g, h):

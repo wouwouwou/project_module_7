@@ -64,17 +64,14 @@ class TestColorRefinement(unittest.TestCase):
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
-        l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
-        # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
+        l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         graphlist = l[0]
-        i = 0
-        res = []
         for g in graphlist:
             colorrefinement.colorrefinement(g)
-            print(g.getcoloring())
         processgraphlist(graphlist)
 
         end = time.time()
