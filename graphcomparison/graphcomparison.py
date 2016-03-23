@@ -48,7 +48,7 @@ def isomorphic(g, h):
         return False
     elif definesbijection(g, h):
         return True
-    # todo: return something else when balanced but not bijection!
+    # todo: implement individualisation refinement for finding an isomorphism
     return False
 
 
@@ -85,7 +85,7 @@ def processing(graphdict):
         if aut == -1:
             isomorph, aut = processgraphs(g, graph)
         else:
-            isomorph = isisomorphic(g, graph)
+            isomorph = isomorphic(g, graph)
 
         if isomorph:
             isogroup.append(graphindex)
@@ -95,30 +95,6 @@ def processing(graphdict):
         i += 1
 
     return nextdict, isogroup, aut
-
-
-def iteration(graphdict):
-    """
-    Creates and returns an array nextlist which contains the ___ and an array isogroup which contains the color codes of
-    ___
-    :param graphdict:
-    :return:
-    """
-    indexlist = list(graphdict.keys())
-    minindex = min(indexlist)
-    g = graphdict[minindex]
-    nextdict = dict()
-    isogroup = [minindex]
-    i = 1
-    while i < len(indexlist):
-        graphindex = indexlist[i]
-        graph = graphdict[graphindex]
-        if isomorphic(g, graph):
-            isogroup.append(graphindex)
-        else:
-            nextdict[graphindex] = graph
-        i += 1
-    return nextdict, isogroup
 
 
 def countautomorphisms(g):
