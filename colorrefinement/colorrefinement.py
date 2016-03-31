@@ -1,5 +1,4 @@
 from colorrefinement.hopcraft import hopcraft
-from graphcomparison.graphcomparison import isbalanced, definesbijection
 from graphs.basicgraphs import graph
 from sortingalgorithms.mergesort import msintlist
 
@@ -108,67 +107,6 @@ def makegraphfromvertices(d):
     return g
 
 
-def countisomorphism(d, i):
-    """
-     Compute the coarsest stable coloring Beta that refines alpha(g.V(), h.V())
-     :param d: vertices of graph g
-     :param i: vertices of graph h
-     :return:
-     """
-    # Refine both graphs prior processing // Reported working.
-    s = d[:]
-    t = i[:]
-    g = makegraphfromvertices(s)
-    h = makegraphfromvertices(t)
-
-    q = g.getcoloring()
-    msintlist(q)
-    print(q)
-    q = h.getcoloring()
-    msintlist(q)
-    print(q)
-
-    # If Beta is unbalanced // Reported working.
-    if not isbalanced(g, h):
-        return 0
-
-    # If Beta defines a bijection
-    if definesbijection(g, h):
-        return 1
-
-    coloringdictg = g.getcolordict()
-    coloringdictt = h.getcolordict()
-
-    possibleclasses = set()
-    for c in coloringdictg:
-        if len(coloringdictg[c]) >= 2 and len(coloringdictt[c]) >= 2:
-            possibleclasses.add(c)
-
-    for a in possibleclasses:
-        b = a
-        break
-
-    for u in s:
-        if u.getcolornum() == b:
-            x = u
-        if x == u:
-            break
-
-    num = 0
-    if possibleclasses.__contains__(x.getcolornum()):
-        xold = x.getcolornum()
-        x.setcolornum(g.maxcolornum() + 1)
-        for y in t:
-            if possibleclasses.__contains__(y.getcolornum()):
-                # Temporally set colornum
-                yold = y.getcolornum()
-                y.setcolornum(h.maxcolornum() + 1)
-                num += countisomorphism(s, t)
-                y.setcolornum(yold)
-        x.setcolornum(xold)
-    return num
-
-
 def colorrefinement(g):
     """
     Gives a stable coloring to graph g
@@ -177,6 +115,12 @@ def colorrefinement(g):
     :return: graph g with stable coloring
     """
     g.setcoloring(hopcraft(g))
+    return g
+
+
+def slowcolorrefinement(g):
+    refbydeg(g)
+    refbynbs(g)
     return g
 
 
@@ -244,3 +188,48 @@ def pruneandnumberisos(G):
     for mult in counted:
         isocount *= mult
     return G, isocount
+
+
+def refbydeg(g):
+    """
+    Gives all the degrees a color value and gives the vertices the color according to their degree
+    :param g:
+    """
+    if g.getcoloring():
+        raise Exception("This graph already has a coloring!")
+    degs = g.degset()
+    degcol = dict()
+    i = 0
+    for d in degs:
+        degcol[d] = i
+        i += 1
+    for v in g.V():
+        v.setcolornum(degcol.get(v.deg()))
+
+
+def refbynbs(g):
+    """
+    Checks for every initially existing color if it has multiple vertices, if a color has multiple vertices it executes
+    herindeel on that same colored group of vertices. When a change has been made during the execution of herindeel
+    (indicated by the max_color value actually not being the max color anymore), refbynbs recurses untill no color
+    changes were made during its run.
+    :param g:
+    :return g modified:
+    """
+    if not g.getcolordict():
+        raise Exception("This graph does not have a coloring yet. Add one!")
+    unique_color = set()
+    max_color = g.maxcolornum()
+    next_color = max_color + 1
+    i = 0
+    while i <= max_color:
+        if i not in unique_color:
+            v = g.getvwithcolornum(i)
+            if len(v) == 1:
+                unique_color.add(i)
+            elif len(v) > 1:
+                g, next_color = herindeel(g, v, next_color)
+        i += 1
+    if next_color != max_color + 1:
+        g = refbynbs(g)
+    return g

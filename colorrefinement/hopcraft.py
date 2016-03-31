@@ -6,6 +6,7 @@ from graphs.graphIO import loadgraph, writeDOT
 import time
 from graphs.basicgraphs import graph
 
+
 def neighbourlist(g: graph, directed=False):
     """
      Generate an incoming list for given vertices.
@@ -57,8 +58,8 @@ def hopcraft(g: graph, smallestpartition=False):
 
     w = set()
     for pn in range(len(p)):
-       if pn != len(p) - 1:
-           w.add(pn)
+        # if pn != len(p) - 1:
+        w.add(pn)
 
     while w:
         # Choose and remove a set A from W
@@ -99,6 +100,7 @@ def hopcraft(g: graph, smallestpartition=False):
 
     return coloring
 
+
 def fastautomorphismcount(g: graph):
     """
     Calculate the amount of automorphisms of one graph.
@@ -118,7 +120,7 @@ class TestColorRefinement(unittest.TestCase):
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
-        #l = loadgraph('../test_grafen/gerbensgraph', readlist=True)
+        # l = loadgraph('../test_grafen/gerbensgraph', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/threepaths10240.gr', readlist=True)

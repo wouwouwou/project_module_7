@@ -41,6 +41,7 @@ class vertex:
         """
         self._graph = graph
         self._label = label
+        self.colornum = 0
         self._inclist = []
 
     def __repr__(self):
@@ -58,11 +59,23 @@ class vertex:
     def setlabel(self, label):
         self._label = label
 
+    def getcolornum(self):
+        return self.colornum
+
+    def setcolornum(self, colornum):
+        self.colornum = colornum
+
     def getinclist(self):
-        return self._inclist
+        return self._inclist[:]
 
     def setinclist(self, inclist):
         self._inclist = inclist
+
+    def nbcolornums(self):
+        colornums = []
+        for v in self.nbs():
+            colornums.append(v.colornum)
+        return colornums
 
     def adj(self, other):
         """
@@ -206,6 +219,12 @@ class graph:
     def setcoloring(self, a):
         self._coloring = a
 
+    def getslowcoloring(self):
+        res = []
+        for v in self.V():
+            res.append(v.getcolornum())
+        return res
+
     def isdirected(self):
         """
         Returns False, because for now these graphs are always undirected.
@@ -248,8 +267,14 @@ class graph:
                 'Edges of a graph G must be between vertices of G')
         e = edge(tail, head)
         self._E.append(e)
-        tail.getinclist().append(e)
-        head.getinclist().append(e)
+
+        i = tail.getinclist()
+        i.append(e)
+        tail.setinclist(i)
+
+        j = head.getinclist()
+        j.append(e)
+        head.setinclist(j)
         return e
 
     def findedge(self, u, v):
@@ -282,15 +307,29 @@ class graph:
             return True
 
     def getvwithcolornum(self, colornum):
-        # todo implement this again
-        pass
+        vs = []
+        for v in self.V():
+            if v.colornum == colornum:
+                vs.append(v)
+        return vs
 
     def maxcolornum(self):
-        # todo implement this again
-        pass
+        maxcolornum = 0
+        for v in self.V():
+            if v.colornum > maxcolornum:
+                maxcolornum = v.colornum
+        return maxcolornum
 
     def degset(self):
         degs = set()
         for v in self.V():
             degs.add(v.deg())
         return degs
+
+    def getcolordict(self):
+        resultdict = dict()
+        for v in self.V():
+            if resultdict.get(v.getcolornum()) is None:
+                resultdict[v.getcolornum()] = set()
+            resultdict[v.getcolornum()].add(v)
+        return resultdict
