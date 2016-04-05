@@ -251,6 +251,8 @@ def hopcraft(g: graph, usecolors=False):
         r[count] = ap
         count += 1
 
+    return r
+
 
 
 def fastautomorphismcount(g: graph):
