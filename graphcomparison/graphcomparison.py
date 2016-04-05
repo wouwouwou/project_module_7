@@ -1,5 +1,6 @@
 from colorrefinement.colorrefinement import colorrefinement, slowcolorrefinement, refbynbs
 from graphs.basicgraphs import graph
+from graphs.graphIO import writeDOT
 from sortingalgorithms.mergesort import msintlist
 
 
@@ -95,6 +96,19 @@ def isbalancedslow(g, h):
     ch = h.getslowcoloring()
     msintlist(cg)
     msintlist(ch)
+    if cg == ch:
+        return True
+    if max(cg) != max(ch):
+        return False
+    i = 0
+    dif = 0
+    while i <= max(cg):
+        s = len(g.getvwithcolornum(i))
+        t = len(h.getvwithcolornum(i))
+        dif += (s-t)
+        i += 1
+    return dif == 0
+
     return cg == ch
 
 
@@ -137,15 +151,14 @@ def countautomorphisms(g, graph):
     :return:
     """
     # Refine both graphs prior processing // Reported working.
-    g = refbynbs(g)
-    graph = refbynbs(graph)
+    g = colorrefinement(g)
+    graph = colorrefinement(graph)
 
     print(g.getcoloring())
     print(graph.getcoloring())
 
     # If Beta is unbalanced // Reported working.
     if not isbalanced(g, graph):
-        print("+0")
         return 0
 
     # If Beta defines a bijection
@@ -165,8 +178,6 @@ def countautomorphisms(g, graph):
 
     if len(possibleclasses) == 0:
         raise Exception("No possible classes!")
-
-    print(possibleclasses)
 
     a = possibleclasses[0]
 
@@ -220,9 +231,13 @@ def slowcountautomorphisms(g, graph):
     :param g:
     :return:
     """
+
     # Refine both graphs prior processing // Reported working.
     g = refbynbs(g)
     graph = refbynbs(graph)
+
+    print(g.getcolordict())
+    print(graph.getcolordict())
 
     # If Beta is unbalanced // Reported working.
     if not isbalancedslow(g, graph):
@@ -247,8 +262,6 @@ def slowcountautomorphisms(g, graph):
     if len(possibleclasses) == 0:
         raise Exception("No possible classes!")
 
-    print(possibleclasses)
-
     a = possibleclasses[0]
 
     # choose a vertex in the chosen coloring class and in V(g)
@@ -268,7 +281,6 @@ def slowcountautomorphisms(g, graph):
             x = v
             break
     x.colornum = s.maxcolornum() + 1
-    i = s.getslowcoloring()
 
     # for each vertex in V(graph) with the same colorgraph
     for y in coloringgraph[a]:
@@ -278,10 +290,7 @@ def slowcountautomorphisms(g, graph):
                 y = v
                 break
         y.colornum = t.maxcolornum() + 1
-        j = t.getslowcoloring()
         num += slowcountautomorphisms(s, t)
-        j = t.getslowcoloring()
-
     return num
 
 
