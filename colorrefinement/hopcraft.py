@@ -201,12 +201,15 @@ def hopcraft(g: graph, usecolors=False):
     p = []
     pSplit = []
     degrees = dict()
-    for v in g.V():
-        degree = len(neighbours[v])
-        if degrees.get(degree, -1) == -1:
-            degrees[degree] = {v}
-        else:
-            degrees[degree].add(v)
+    if g.getcoloring():
+        degrees = g.getcoloring()
+    else:
+        for v in g.V():
+            degree = len(neighbours[v])
+            if degrees.get(degree, -1) == -1:
+                degrees[degree] = {v}
+            else:
+                degrees[degree].add(v)
 
     if usecolors:
         p = generatePfromColors(g)
