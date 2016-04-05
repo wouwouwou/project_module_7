@@ -1,6 +1,5 @@
-from colorrefinement.colorrefinement import colorrefinement, slowcolorrefinement, refbynbs
+from colorrefinement.colorrefinement import colorrefinement, refbynbs
 from graphs.basicgraphs import graph
-from graphs.graphIO import writeDOT
 from sortingalgorithms.mergesort import msintlist
 
 
@@ -34,7 +33,6 @@ def processing(graphdict):
         graphindex = indexlist[i]
         graph = graphdict[graphindex]
         isomorph = False
-
         # if aut == -1 then we have to test all the conditions.
         if aut == -1:
             if definesbijection(g, graph):
@@ -48,27 +46,21 @@ def processing(graphdict):
                     aut = countautomorphisms(g, graph)
                 if aut == 0:
                     aut = -1
-
         # if aut == 1 we only have to check if the graphs define a bijection
         elif aut == 1:
             if definesbijection(g, graph):
                 isomorph = True
-
         # if aut > 1 we have to branch, but only to check if the graphs are isomorphic
         elif aut > 1:
             isomorph = isomorphicbranching(g, graph)
-
         # another value for aut is not accepted!
         else:
             raise Exception("aut is not valid!")
-
         if isomorph:
             isogroup.append(graphindex)
         else:
             nextdict[graphindex] = graph
-
         i += 1
-
     return nextdict, isogroup, aut
 
 
@@ -107,8 +99,6 @@ def isbalancedslow(g, h):
         dif += (s-t)
         i += 1
     return dif == 0
-
-    return cg == ch
 
 
 def definesbijection(g, h):
@@ -406,64 +396,3 @@ def slowcopygraph(g):
             if u.getlabel() == v.getlabel():
                 v.colornum = u.colornum
     return f
-
-
-def countisomorphism(d, i):
-    """
-     Compute the coarsest stable coloring Beta that refines alpha(g.V(), h.V())
-     :param d: vertices of graph g
-     :param i: vertices of graph h
-     :return:
-     """
-    # Refine both graphs prior processing // Reported working.
-    s = d[:]
-    t = i[:]
-    g = makegraphfromvertices(s)
-    h = makegraphfromvertices(t)
-
-    q = g.getcoloring()
-    msintlist(q)
-    print(q)
-    q = h.getcoloring()
-    msintlist(q)
-    print(q)
-
-    # If Beta is unbalanced // Reported working.
-    if not isbalanced(g, h):
-        return 0
-
-    # If Beta defines a bijection
-    if definesbijection(g, h):
-        return 1
-
-    coloringdictg = g.getcolordict()
-    coloringdictt = h.getcolordict()
-
-    possibleclasses = set()
-    for c in coloringdictg:
-        if len(coloringdictg[c]) >= 2 and len(coloringdictt[c]) >= 2:
-            possibleclasses.add(c)
-
-    for a in possibleclasses:
-        b = a
-        break
-
-    for u in s:
-        if u.getcolornum() == b:
-            x = u
-        if x == u:
-            break
-
-    num = 0
-    if possibleclasses.__contains__(x.getcolornum()):
-        xold = x.getcolornum()
-        x.setcolornum(g.maxcolornum() + 1)
-        for y in t:
-            if possibleclasses.__contains__(y.getcolornum()):
-                # Temporally set colornum
-                yold = y.getcolornum()
-                y.setcolornum(h.maxcolornum() + 1)
-                num += countisomorphism(s, t)
-                y.setcolornum(yold)
-        x.setcolornum(xold)
-    return num
