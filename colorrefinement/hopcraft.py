@@ -59,6 +59,7 @@ def hopcraft(g: graph, smallestpartition = False):
         if pn != len(partition) - 1:
             queue.add(pn)
 
+    # Loop queue
     while queue:
         # Choose and remove a set A from W
         an = queue.pop()
