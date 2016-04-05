@@ -245,7 +245,12 @@ def hopcraft(g: graph, usecolors=False):
                                     w.add(yN)
                                 else:
                                     w.add(len(p) - 1)
-    return p
+    r = dict()
+    count = 0
+    for ap in p:
+        r[count] = ap
+        count += 1
+
 
 
 def fastautomorphismcount(g: graph):
