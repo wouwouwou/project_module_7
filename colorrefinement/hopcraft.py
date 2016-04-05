@@ -1,8 +1,9 @@
-import unittest
-
 from graphs.graphIO import loadgraph, writeDOT
-import time
 from graphs.basicgraphs import graph
+
+# Import for testing purposes only
+import time
+import unittest
 
 
 def neighbourlist(g: graph, directed=False):
