@@ -71,9 +71,9 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
-        # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
+        l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/trees90.grl', readlist=True)
-        l = loadgraph('../test_grafen/products72.grl', readlist=True)
+        # l = loadgraph('../test_grafen/products72.grl', readlist=True)
         # l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
         graphlist = l[0]
         processgraphlist(graphlist)
