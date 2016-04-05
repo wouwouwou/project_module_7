@@ -98,20 +98,6 @@ def hopcraft(g: graph, smallestpartition = False):
 
     return coloring
 
-
-def fastautomorphismcount(g: graph):
-    """
-    Calculate the amount of automorphisms of one graph.
-    :param g:
-    :return:
-    """
-    coloring = hopcraft(g, False)
-    isomorphisms = 1
-    for cl in range(len(coloring)):
-        isomorphisms *= len(coloring[cl])
-    return isomorphisms
-
-
 class TestColorRefinement(unittest.TestCase):
     def testIsomorphismCount(self):
         start = time.time()
