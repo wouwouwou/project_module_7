@@ -120,7 +120,15 @@ def fasthopcraft(g: graph):
     for v in g.V():
         if not len(nbl[v]) in dll.keys():
             dll[len(nbl[v])] = DoubleList()
+            print("adding " + nbl[v])
         dll[len(nbl[v])].append(v)
+        v.dllpointer = dll[len(nbl[v])]
+        color[v] = len(nbl[v])
+
+    print("Queue"+str(queue))
+    print("Inqueue"+str(inqueue))
+    for key, value in dll.items():
+        print(key)
 
     while queue:
         l = set()
@@ -169,25 +177,7 @@ def fasthopcraft(g: graph):
         v.colornum = color[v]
     return g
 
-def generatePfromColors(G):
-    p = []
-    colors = dict()
-    for v in G.V():
-        if v.colornum in colors.keys():
-            colors[v.colornum].add(v)
-        else:
-            colors[v.colornum] = {v}
-    keys = list(colors.keys())
-    for key in keys:
-        p.append(colors[key])
-    return p
-
-def writeColors(partitions):
-    for i in range(len(partitions)):
-        for v in partitions[i]:
-            v.colornum = i
-
-def hopcraft(g: graph, usecolors=False):
+def hopcraft(g: graph, smallestpartition=False):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
      This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.
@@ -196,66 +186,72 @@ def hopcraft(g: graph, usecolors=False):
      :param smallestpartition: Select the smallest partition to refine first.
      :param g: The graph
     """
-
+    # Generate a list of neighbours that have incoming (and possibly outgoing) vertices.
     neighbours = neighbourlist(g, g.isdirected())
-    p = []
-    pSplit = []
+
+    # degrees := {1: p1, 2: p2, ..., n: pn} met px = {v1, v2, ..., vk}
     degrees = dict()
-    if g.getcoloring():
-        degrees = g.getcoloring()
-    else:
+
+    partition = []
+
+    # Set initial coloring if coloring is not set.
+    if not g.getcoloring():
         for v in g.V():
             degree = len(neighbours[v])
-            if degrees.get(degree, -1) == -1:
-                degrees[degree] = {v}
-            else:
-                degrees[degree].add(v)
-
-    if usecolors:
-        p = generatePfromColors(g)
-        pSplit = generatePfromColors(g)
+            if degree not in degrees.keys():
+                degrees[degree] = set()
+            degrees[degree].add(v)
     else:
-        for k in degrees:
-            p.append(degrees[k])
-            pSplit.append(degrees[k])
+        degrees = g.getcoloring()
 
-    w = set(range(len(p)))
-    while w:
-        #print("w: ", w)
-        #print("wl: ", [(c, len(p[c])) for c in w])
-        aN = w.pop()
-        a = p[aN]
-        nbs = set()
-        for va in a:
-            nbs |= neighbours[va]
-        # print("nbs: ", nbs)
-        for color in pSplit:
-            x = nbs & color
-            # print("nbs & color: ", x)
-            if x:
-                for yN in range(len(p)):
-                    if len(p[yN]) > 1:
-                        y = p[yN]
-                        both = x & y
-                        ynotx = y - x
-                        if both and ynotx:
-                            p[yN] = both
-                            p.append(ynotx)
-                            if yN in w:
-                                w.add(len(p) - 1)
-                            else:
-                                if len(both) <= len(ynotx):
-                                    w.add(yN)
-                                else:
-                                    w.add(len(p) - 1)
-    r = dict()
-    count = 0
-    for ap in p:
-        r[count] = ap
-        count += 1
+    # p := {p1, p2, ..., pn}
+    for k in degrees:
+        partition.append(degrees[k])
 
-    return r
+    queue = set(range(len(partition)))
+    for pn in range(len(partition)):
+        if pn != len(partition) - 1:
+            queue.add(pn)
 
+    while queue:
+        # Choose and remove a set A from W
+        an = queue.pop()
+        a = partition[an]
+
+        # Iterate for each degree in degrees
+        for color in partition:
+            if color != a:
+                # Let X be the set of states for which a transition on degree leads to a state in A
+                nbs = set()
+                for v in a:
+                    nbs |= neighbours[v]
+                x = nbs & color
+
+                # Iterate for each c in range(len(p)), with x&y and y-x not empty.
+                for yN in {c for c in range(len(partition)) if x&partition[c] and partition[c]-x}:
+                    # Replace y in p by the two sets x&y and y-x
+                    y = partition[yN]
+                    partition[yN] = x & y
+                    partition.append(y-x)
+
+                    # If y is in w
+                    if yN in queue:
+                        # Add position of p.add(y - x) to w
+                        queue.add(len(partition) - 1)
+                    else:
+                        # Partition the smallest one.
+                        if len(x & y) <= len(y - x):
+                            # Add position of x&y in p to w
+                            queue.add(yN)
+                        else:
+                            # Add position of y-x in p to w
+                            queue.add(len(partition) - 1)
+
+    coloring = dict()
+    for pN in range(len(partition)):
+        coloring[pN] = partition[pN]
+
+    return coloring
 
 
 def fastautomorphismcount(g: graph):
