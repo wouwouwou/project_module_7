@@ -23,13 +23,13 @@ def neighbourlist(g: graph, directed=False):
     return result
 
 
-def hopcraft(g: graph, smallestpartition = False):
+def hopcraft(g: graph):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
-     This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.
+     This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount
+     of degrees.
      @see https://en.wikipedia.org/wiki/DFA_minimization#Hopcroft.27s_algorithm
      @see https://riunet.upv.es/bitstream/handle/10251/27623/partial%20rev%20determ.pdf?sequence=1 Algorithm 6.1
-     :param smallestpartition: Select the smallest partition to refine first.
      :param g: The graph
     """
     # Generate a list of neighbours that have incoming (and possibly outgoing) vertices.
@@ -99,6 +99,7 @@ def hopcraft(g: graph, smallestpartition = False):
 
     return coloring
 
+
 class TestColorRefinement(unittest.TestCase):
     def testIsomorphismCount(self):
         start = time.time()
@@ -113,11 +114,11 @@ class TestColorRefinement(unittest.TestCase):
         #   `l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/trees90.grl', readlist=True)
         # Gets the first graph out of the list of graphs
-        graph = hopcraft(l[0][1])
+        g = hopcraft(l[0][1])
 
         end = time.time()
         t = end - start
-        writeDOT(graph, "output.dot")
+        writeDOT(g, "output.dot")
         print("Execution time: " + str(t))
 
 

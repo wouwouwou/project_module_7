@@ -143,14 +143,14 @@ class edge:
         raise GraphError(
             'edge.otherend(oneend): oneend must be head or tail of edge')
 
-    def incident(self, vertex):
+    def incident(self, v):
         """
         Returns True iff the edge <self> is incident with the
         vertex <vertex>.
 
-        :param vertex: The vertex <vertex> the edge <self> should be incident with.
+        :param v: The vertex <vertex> the edge <self> should be incident with.
         """
-        if self.tail() == vertex or self.head() == vertex:
+        if self.tail() == v or self.head() == v:
             return True
         else:
             return False
