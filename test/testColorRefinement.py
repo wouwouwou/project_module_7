@@ -2,7 +2,7 @@ import time
 import unittest
 
 from colorrefinement import colorrefinement
-from graphcomparison.graphcomparison import countautomorphisms, slowcountautomorphisms
+from graphcomparison.graphcomparison import countautomorphisms, slowcountautomorphisms, processgraphlist
 from graphs.basicgraphs import graph
 from graphs.graphIO import loadgraph, writeDOT
 
@@ -46,12 +46,12 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
         # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
-        l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
+        # l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
         # Gets the first graph out of the list of graphs
-        g = colorrefinement.slowcolorrefinement(l[0][1])
+        g = colorrefinement.colorrefinement(l[0][1])
         writeDOT(g, "output.dot")
 
         end = time.time()
@@ -73,12 +73,10 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
         # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/trees90.grl', readlist=True)
-        # l = loadgraph('../test_grafen/products72.grl', readlist=True)
-        l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
+        l = loadgraph('../test_grafen/products72.grl', readlist=True)
+        # l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
         graphlist = l[0]
-        for g in graphlist:
-            colorrefinement.slowcolorrefinement(g)
-        print(str(slowcountautomorphisms(l[0][1], l[0][1])))
+        processgraphlist(graphlist)
 
         end = time.time()
         t = end - start

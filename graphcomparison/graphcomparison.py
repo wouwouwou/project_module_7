@@ -7,7 +7,7 @@ from sortingalgorithms.mergesort import msintlist
 def processgraphlist(graphlist):
     for g in graphlist:
             colorrefinement(g)
-    res = dict()
+    res = list()
     graphdict = dict()
     i = 0
     while i < len(graphlist):
@@ -15,11 +15,11 @@ def processgraphlist(graphlist):
         i += 1
     while len(graphdict) != 0:
         graphdict, isogroup, aut = processing(graphdict)
-        res[isogroup] = aut
+        res.append((isogroup, aut))
 
     # prints to standardout the isogroup and #aut in that group
-    for isogroup in list(res.keys()):
-        print(str(isogroup) + " " + str(res[isogroup]) + "\n")
+    for tup in res:
+        print(tup)
 
 
 def processing(graphdict):
@@ -43,12 +43,11 @@ def processing(graphdict):
             elif not isbalanced(g, graph):
                 pass
             else:
-                aut = countautomorphisms(g, graph)
+                isomorph = isomorphicbranching(g, graph)
+                if isomorph:
+                    aut = countautomorphisms(g, graph)
                 if aut == 0:
                     aut = -1
-                    isomorph = False
-                else:
-                    isomorph = True
 
         # if aut == 1 we only have to check if the graphs define a bijection
         elif aut == 1:
@@ -153,9 +152,8 @@ def countautomorphisms(g, graph):
     # Refine both graphs prior processing // Reported working.
     g = colorrefinement(g)
     graph = colorrefinement(graph)
-
-    print(g.getcoloring())
-    print(graph.getcoloring())
+    g = colorrefinement(g)
+    graph = colorrefinement(graph)
 
     # If Beta is unbalanced // Reported working.
     if not isbalanced(g, graph):
@@ -163,7 +161,6 @@ def countautomorphisms(g, graph):
 
     # If Beta defines a bijection
     if definesbijection(g, graph):
-        print("+1")
         return 1
 
     # choose a coloring class which contains more than 2 vertices
@@ -295,7 +292,84 @@ def slowcountautomorphisms(g, graph):
 
 
 def isomorphicbranching(g, graph):
-    pass
+    """
+    Individualisation branching for determining if the graphs are isomorphic
+    :param graph:
+    :param g:
+    :return:
+    """
+    # Refine both graphs prior processing // Reported working.
+    g = colorrefinement(g)
+    graph = colorrefinement(graph)
+    g = colorrefinement(g)
+    graph = colorrefinement(graph)
+
+    # If Beta is unbalanced // Reported working.
+    if not isbalanced(g, graph):
+        return False
+
+    # If Beta defines a bijection
+    if definesbijection(g, graph):
+        return True
+
+    # choose a coloring class which contains more than 2 vertices
+    coloringg = g.getcoloring()
+    coloringgraph = graph.getcoloring()
+
+    possibleclasses = list()
+
+    for c in coloringg.keys():
+        if len(coloringg[c]) == len(coloringgraph[c]) and len(coloringg[c]) > 1:
+            possibleclasses.append(c)
+
+    if len(possibleclasses) == 0:
+        raise Exception("No possible classes!")
+
+    a = possibleclasses[0]
+
+    # choose a vertex in the chosen coloring class and in V(g)
+    x = None
+
+    for v in coloringg[a]:
+        x = v
+        break
+
+    if x is None:
+        raise Exception("failed to choose a vertex in the chosen color class")
+
+    num = False
+    s = copygraph(g)
+    colorings = s.getcoloring().copy()
+    for v in s.V():
+        if x.getlabel() == v.getlabel():
+            x = v
+            break
+    colorings[a].remove(x)
+    nextclass = max(colorings.keys()) + 1
+    setx = set()
+    setx.add(x)
+    colorings[nextclass] = setx
+    s.setcoloring(colorings)
+
+    # for each vertex in V(graph) with the same colorgraph
+    for y in coloringgraph[a]:
+        t = copygraph(graph)
+        coloringt = t.getcoloring().copy()
+        for v in t.V():
+            if y.getlabel() == v.getlabel():
+                y = v
+                break
+        coloringt[a].remove(y)
+        nextclass = max(coloringt.keys()) + 1
+        sety = set()
+        sety.add(y)
+        coloringt[nextclass] = sety
+        t.setcoloring(coloringt)
+        num = isomorphicbranching(s, t)
+        if num:
+            break
+
+    return num
 
 
 def copygraph(g):
