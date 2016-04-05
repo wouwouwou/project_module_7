@@ -1,5 +1,4 @@
 from colorrefinement.hopcraft import hopcraft
-from graphs.basicgraphs import graph
 from sortingalgorithms.mergesort import msintlist
 
 """

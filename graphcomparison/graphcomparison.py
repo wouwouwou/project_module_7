@@ -31,35 +31,35 @@ def processing(graphdict):
     i = 1
     while i < len(indexlist):
         graphindex = indexlist[i]
-        graph = graphdict[graphindex]
+        grap = graphdict[graphindex]
         isomorph = False
         # if aut == -1 then we have to test all the conditions.
         if aut == -1:
-            if definesbijection(g, graph):
+            if definesbijection(g, grap):
                 isomorph = True
                 aut = 1
-            elif not isbalanced(g, graph):
+            elif not isbalanced(g, grap):
                 pass
             else:
-                isomorph = isomorphicbranching(g, graph)
+                isomorph = isomorphicbranching(g, grap)
                 if isomorph:
-                    aut = countautomorphisms(g, graph)
+                    aut = countautomorphisms(g, grap)
                 if aut == 0:
                     aut = -1
         # if aut == 1 we only have to check if the graphs define a bijection
         elif aut == 1:
-            if definesbijection(g, graph):
+            if definesbijection(g, grap):
                 isomorph = True
         # if aut > 1 we have to branch, but only to check if the graphs are isomorphic
         elif aut > 1:
-            isomorph = isomorphicbranching(g, graph)
+            isomorph = isomorphicbranching(g, grap)
         # another value for aut is not accepted!
         else:
             raise Exception("aut is not valid!")
         if isomorph:
             isogroup.append(graphindex)
         else:
-            nextdict[graphindex] = graph
+            nextdict[graphindex] = grap
         i += 1
     return nextdict, isogroup, aut
 
@@ -132,30 +132,30 @@ def definesbijectionslow(g, h):
     return False
 
 
-def countautomorphisms(g, graph):
+def countautomorphisms(g, grap):
     """
     Counts automorphisms of a graph. Should return 1 <= n <= n! where n is amount of vertices en the graph
-    :param graph:
+    :param grap:
     :param g:
     :return:
     """
     # Refine both graphs prior processing // Reported working.
     g = colorrefinement(g)
-    graph = colorrefinement(graph)
+    grap = colorrefinement(grap)
     g = colorrefinement(g)
-    graph = colorrefinement(graph)
+    grap = colorrefinement(grap)
 
     # If Beta is unbalanced // Reported working.
-    if not isbalanced(g, graph):
+    if not isbalanced(g, grap):
         return 0
 
     # If Beta defines a bijection
-    if definesbijection(g, graph):
+    if definesbijection(g, grap):
         return 1
 
     # choose a coloring class which contains more than 2 vertices
     coloringg = g.getcoloring()
-    coloringgraph = graph.getcoloring()
+    coloringgraph = grap.getcoloring()
 
     possibleclasses = list()
 
@@ -194,7 +194,7 @@ def countautomorphisms(g, graph):
 
     # for each vertex in V(graph) with the same colorgraph
     for y in coloringgraph[a]:
-        t = copygraph(graph)
+        t = copygraph(grap)
         coloringt = t.getcoloring().copy()
         for v in t.V():
             if y.getlabel() == v.getlabel():
@@ -211,34 +211,34 @@ def countautomorphisms(g, graph):
     return num
 
 
-def slowcountautomorphisms(g, graph):
+def slowcountautomorphisms(g, grap):
     """
     Counts automorphisms of a graph. Should return 1 <= n <= n! where n is amount of vertices en the graph
-    :param graph:
+    :param grap:
     :param g:
     :return:
     """
 
     # Refine both graphs prior processing // Reported working.
     g = refbynbs(g)
-    graph = refbynbs(graph)
+    grap = refbynbs(grap)
 
     print(g.getcolordict())
-    print(graph.getcolordict())
+    print(grap.getcolordict())
 
     # If Beta is unbalanced // Reported working.
-    if not isbalancedslow(g, graph):
+    if not isbalancedslow(g, grap):
         print("+0")
         return 0
 
     # If Beta defines a bijection
-    if definesbijectionslow(g, graph):
+    if definesbijectionslow(g, grap):
         print("+1")
         return 1
 
     # choose a coloring class which contains more than 2 vertices
     coloringg = g.getcolordict()
-    coloringgraph = graph.getcolordict()
+    coloringgraph = grap.getcolordict()
 
     possibleclasses = list()
 
@@ -271,7 +271,7 @@ def slowcountautomorphisms(g, graph):
 
     # for each vertex in V(graph) with the same colorgraph
     for y in coloringgraph[a]:
-        t = slowcopygraph(graph)
+        t = slowcopygraph(grap)
         for v in t.V():
             if y.getlabel() == v.getlabel():
                 y = v
@@ -281,30 +281,30 @@ def slowcountautomorphisms(g, graph):
     return num
 
 
-def isomorphicbranching(g, graph):
+def isomorphicbranching(g, grap):
     """
     Individualisation branching for determining if the graphs are isomorphic
-    :param graph:
+    :param grap:
     :param g:
     :return:
     """
     # Refine both graphs prior processing // Reported working.
     g = colorrefinement(g)
-    graph = colorrefinement(graph)
+    grap = colorrefinement(grap)
     g = colorrefinement(g)
-    graph = colorrefinement(graph)
+    grap = colorrefinement(grap)
 
     # If Beta is unbalanced // Reported working.
-    if not isbalanced(g, graph):
+    if not isbalanced(g, grap):
         return False
 
     # If Beta defines a bijection
-    if definesbijection(g, graph):
+    if definesbijection(g, grap):
         return True
 
     # choose a coloring class which contains more than 2 vertices
     coloringg = g.getcoloring()
-    coloringgraph = graph.getcoloring()
+    coloringgraph = grap.getcoloring()
 
     possibleclasses = list()
 
@@ -343,7 +343,7 @@ def isomorphicbranching(g, graph):
 
     # for each vertex in V(graph) with the same colorgraph
     for y in coloringgraph[a]:
-        t = copygraph(graph)
+        t = copygraph(grap)
         coloringt = t.getcoloring().copy()
         for v in t.V():
             if y.getlabel() == v.getlabel():

@@ -3,7 +3,6 @@ import unittest
 
 from colorrefinement import colorrefinement
 from graphcomparison.graphcomparison import processgraphlist
-from graphs.basicgraphs import graph
 from graphs.graphIO import loadgraph, writeDOT
 
 
