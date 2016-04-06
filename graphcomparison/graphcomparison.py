@@ -1,12 +1,14 @@
-from colorrefinement.colorrefinement import colorrefinement, refbynbs, movevertex
+from colorrefinement.colorrefinement import colorrefinement, refbynbs, movevertex, refbydeg, herindeel, movevertices
 from graphs.basicgraphs import graph
-from sortingalgorithms.mergesort import msintlist
+
+
+def processgraphlist(graphlist):
+    isogroups = isoprocessgraphlist(graphlist)
+
+    pass
 
 
 def isoprocessgraphlist(graphlist):
-    print("colorrefining")
-    for g in graphlist:
-        colorrefinement(g)
     res = list()
     graphdict = dict()
     i = 0
@@ -18,11 +20,49 @@ def isoprocessgraphlist(graphlist):
         print("isoprocessing")
         graphdict, isogroup = isoprocessing(graphdict)
         res.append(isogroup)
+    return res
 
     print("Printing Results!")
     # prints to standardout the isogroup and #aut in that group
     for tup in res:
         print(tup)
+
+
+def checkbynbs(g, h):
+    gmax_color = g.maxcolornum()
+    gchangedict = dict()
+    hchangedict = dict()
+    i = 0
+    while i <= gmax_color:
+        v = g.getvwithcolornum(i)
+        u = h.getvwithcolornum(i)
+        if len(v) > 1:
+            gchangedict = herindeel(gchangedict, v)
+            hchangedict = herindeel(hchangedict, u)
+        i += 1
+
+    next_color = gmax_color + 1
+    if gchangedict or hchangedict:
+        if gchangedict:
+            keys = list(gchangedict.keys())
+            for k in keys:
+                movevertices(g, gchangedict[k], next_color)
+                next_color += 1
+        if hchangedict:
+            next_color = gmax_color + 1
+            keys = list(hchangedict.keys())
+            for k in keys:
+                movevertices(h, hchangedict[k], next_color)
+                next_color += 1
+
+    if definesbijection(g, h):
+        return 1
+    if not isbalanced(g, h):
+        return 0
+
+    if next_color != gmax_color + 1:
+        return checkbynbs(g, h)
+    return -1
 
 
 def isoprocessing(graphdict):
@@ -36,14 +76,21 @@ def isoprocessing(graphdict):
     while i < len(indexlist):
         graphindex = indexlist[i]
         grap = graphdict[graphindex]
-        isomorph = False
-        # if aut == -1 then we have to test all the conditions.
+        x = -1
+        if not g.getcoloring():
+            refbydeg(g)
+        if not grap.getcoloring():
+            refbydeg(grap)
         if definesbijection(g, grap):
-            print("definesbijection!")
-            isomorph = True
+            x = 1
         elif not isbalanced(g, grap):
-            print("not balanced!")
-            pass
+            x = 0
+        if x == -1:
+            x = checkbynbs(g, grap)
+        if x == 0:
+            isomorph = False
+        elif x == 1:
+            isomorph = True
         else:
             print("balanced but not defines bijection!")
             isomorph = isomorphicbranching(g, grap)
@@ -55,7 +102,7 @@ def isoprocessing(graphdict):
     return nextdict, isogroup
 
 
-def processgraphlist(graphlist):
+def autprocessgraphlist(graphlist):
     for g in graphlist:
             colorrefinement(g)
     res = list()
@@ -65,7 +112,7 @@ def processgraphlist(graphlist):
         graphdict[i] = graphlist[i]
         i += 1
     while len(graphdict) != 0:
-        graphdict, isogroup, aut = processing(graphdict)
+        graphdict, isogroup, aut = autprocessing(graphdict)
         res.append((isogroup, aut))
 
     print("Printing Results!")
@@ -74,7 +121,7 @@ def processgraphlist(graphlist):
         print(tup)
 
 
-def processing(graphdict):
+def autprocessing(graphdict):
     indexlist = list(graphdict.keys())
     minindex = min(indexlist)
     g = graphdict[minindex]
@@ -89,7 +136,6 @@ def processing(graphdict):
         isomorph = False
         # if aut == -1 then we have to test all the conditions.
         if aut == -1:
-            print("aut = -1")
             if definesbijection(g, grap):
                 print("definesbijection!")
                 isomorph = True
@@ -182,9 +228,6 @@ def choosecolorclass(g, grap):
     return possibleclasses[0]
 
 
-
-
-
 def countautomorphisms(g, grap):
     """
     Counts automorphisms of a graph. Should return 1 <= n <= n! where n is amount of vertices en the graph
@@ -204,7 +247,6 @@ def countautomorphisms(g, grap):
 
     # If Beta defines a bijection
     if definesbijection(g, grap):
-        print("+1")
         return 1
 
     # choose a coloring class which contains more than 2 vertices

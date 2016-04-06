@@ -112,6 +112,7 @@ def refbynbs(g):
 
     if next_color != max_color + 1:
         g = refbynbs(g)
+
     return g
 
 
@@ -175,8 +176,7 @@ def movevertices(g, vcs, c):
     :return:
     """
     coloring = g.getcoloring().copy()
-    if coloring[c] is None:
-        coloring[c] = set()
+    coloring[c] = set()
     for v in vcs:
         coloring[v.getcolornum()].remove(v)
         v.setcolornum(c)
