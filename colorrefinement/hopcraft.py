@@ -4,6 +4,7 @@ from graphs.graphIO import loadgraph, writeDOT
 import time
 from graphs.basicgraphs import graph
 
+
 def neighbourlist(g: graph, directed=False):
     """
      Generate an incoming list for given vertices.
@@ -20,6 +21,7 @@ def neighbourlist(g: graph, directed=False):
             result[e.head()].add(e.tail())
     return result
 
+
 def generatePfromColors(G):
     p = []
     colors = dict()
@@ -33,10 +35,12 @@ def generatePfromColors(G):
         p.append(colors[key])
     return p
 
+
 def writeColors(partitions):
     for i in range(len(partitions)):
         for v in partitions[i]:
             v.colornum = i
+
 
 def hopcraft(g: graph, usecolors=False):
     """

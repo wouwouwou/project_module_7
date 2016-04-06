@@ -3,6 +3,58 @@ from graphs.basicgraphs import graph
 from sortingalgorithms.mergesort import msintlist
 
 
+def isoprocessgraphlist(graphlist):
+    print("colorrefining")
+    for g in graphlist:
+        colorrefinement(g)
+    res = list()
+    graphdict = dict()
+    i = 0
+    print("putting in dict")
+    while i < len(graphlist):
+        graphdict[i] = graphlist[i]
+        i += 1
+    while len(graphdict) != 0:
+        print("isoprocessing")
+        graphdict, isogroup = isoprocessing(graphdict)
+        res.append(isogroup)
+
+    print("Printing Results!")
+    # prints to standardout the isogroup and #aut in that group
+    for tup in res:
+        print(tup)
+
+
+def isoprocessing(graphdict):
+    indexlist = list(graphdict.keys())
+    minindex = min(indexlist)
+    g = graphdict[minindex]
+    nextdict = dict()
+    isogroup = [minindex]
+    i = 1
+    print("Initialized Processing")
+    while i < len(indexlist):
+        graphindex = indexlist[i]
+        grap = graphdict[graphindex]
+        isomorph = False
+        # if aut == -1 then we have to test all the conditions.
+        if definesbijection(g, grap):
+            print("definesbijection!")
+            isomorph = True
+        elif not isbalanced(g, grap):
+            print("not balanced!")
+            pass
+        else:
+            print("balanced but not defines bijection!")
+            isomorph = isomorphicbranching(g, grap)
+        if isomorph:
+            isogroup.append(graphindex)
+        else:
+            nextdict[graphindex] = grap
+        i += 1
+    return nextdict, isogroup
+
+
 def processgraphlist(graphlist):
     for g in graphlist:
             colorrefinement(g)
@@ -16,6 +68,7 @@ def processgraphlist(graphlist):
         graphdict, isogroup, aut = processing(graphdict)
         res.append((isogroup, aut))
 
+    print("Printing Results!")
     # prints to standardout the isogroup and #aut in that group
     for tup in res:
         print(tup)
@@ -29,27 +82,33 @@ def processing(graphdict):
     isogroup = [minindex]
     aut = -1
     i = 1
+    print("Initialized Processing")
     while i < len(indexlist):
         graphindex = indexlist[i]
         grap = graphdict[graphindex]
         isomorph = False
         # if aut == -1 then we have to test all the conditions.
         if aut == -1:
+            print("aut = -1")
             if definesbijection(g, grap):
+                print("definesbijection!")
                 isomorph = True
                 aut = 1
             elif not isbalanced(g, grap):
+                print("not balanced!")
                 pass
             else:
+                print("balanced but not defines bijection!")
                 isomorph = isomorphicbranching(g, grap)
                 if isomorph:
+                    print("Isomorph!")
                     aut = countautomorphisms(g, grap)
                 if aut == 0:
+                    print("Not isomorph!")
                     aut = -1
         # if aut == 1 we only have to check if the graphs define a bijection
         elif aut == 1:
-            if definesbijection(g, grap):
-                isomorph = True
+            isomorph = definesbijection(g, grap)
         # if aut > 1 we have to branch, but only to check if the graphs are isomorphic
         elif aut > 1:
             isomorph = isomorphicbranching(g, grap)
@@ -151,6 +210,7 @@ def countautomorphisms(g, grap):
 
     # If Beta defines a bijection
     if definesbijection(g, grap):
+        print("+1")
         return 1
 
     # choose a coloring class which contains more than 2 vertices
@@ -245,6 +305,7 @@ def slowcountautomorphisms(g, grap):
     for c in coloringg.keys():
         if len(coloringg[c]) == len(coloringgraph[c]) and len(coloringg[c]) > 1:
             possibleclasses.append(c)
+            break
 
     if len(possibleclasses) == 0:
         raise Exception("No possible classes!")
@@ -311,6 +372,7 @@ def isomorphicbranching(g, grap):
     for c in coloringg.keys():
         if len(coloringg[c]) == len(coloringgraph[c]) and len(coloringg[c]) > 1:
             possibleclasses.append(c)
+            break
 
     if len(possibleclasses) == 0:
         raise Exception("No possible classes!")
