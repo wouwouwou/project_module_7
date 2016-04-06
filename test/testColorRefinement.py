@@ -40,8 +40,8 @@ class TestColorRefinement(unittest.TestCase):
         start = time.time()
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
-        l = loadgraph('../test_grafen/basis/basicAut1.grl', readlist=True)
-        #l = loadgraph('../test_grafen/basis/basicAut2.grl', readlist=True)
+        l = loadgraph('../test_grafen/basis/basicAut1.gr', readlist=True)
+        #l = loadgraph('../test_grafen/basis/basicAut2.gr', readlist=True)
         #l = loadgraph('../test_grafen/basis/basicGI1.grl', readlist=True)
         #l = loadgraph('../test_grafen/basis/basicGI2.grl', readlist=True)
         #l = loadgraph('../test_grafen/basis/basicGI3.grl', readlist=True)
