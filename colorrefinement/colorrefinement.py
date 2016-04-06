@@ -6,9 +6,31 @@ Methods for colorrefinement of graphs. Also can decide of graphs are isomorphic.
 """
 
 
+def colorrefinegraphlist(graphlist):
+    """
+    Colorrefines every graph in the graphlist with hopcraft
+    :param graphlist: The list of graphs to be colorrefined
+    :return: A list of graphs which have a coarsest stable coloring
+    """
+    for g in graphlist:
+        colorrefinement(g)
+    return graphlist
+
+
+def slowcolorrefinegraphlist(graphlist):
+    """
+    Colorrefines every graph in the graphlist with the slow algorithm
+    :param graphlist: The list of graphs to be colorrefined
+    :return: A list of graphs which have a coarsest stable coloring
+    """
+    for g in graphlist:
+        slowcolorrefinement(g)
+    return graphlist
+
+
 def colorrefinement(g):
     """
-    Gives a stable coloring to graph g
+    Gives a stable coloring to graph g with the hopcraft algorithm
 
     :param g: graph g
     :return: graph g with stable coloring
@@ -18,56 +40,34 @@ def colorrefinement(g):
 
 
 def slowcolorrefinement(g):
+    """
+    Gives a stable coloring to graph g with a slow algorithm
+
+    :param g: graph g
+    :return: graph g with stable coloring
+    """
     refbydeg(g)
     refbynbs(g)
     return g
 
 
-def pruneandnumberisos(g):
-    color = []
-    index = []
-    counted = []
-    removed = []
-    for vert in g.V():
-        if len(color) > 0:
-            for i in range(len(color)):
-                if vert.colornum == color[i]:
-                    g.V().remove(vert)
-                    counted[i] += 1
-                    if not removed[i]:
-                        g.V().remove(index[i])
-                        removed[i] = True
-                else:
-                    color.append(vert.colornum)
-                    index.append(vert)
-                    removed.append(False)
-                    counted.append(1)
-        else:
-            color.append(vert.colornum)
-            index.append(vert)
-            removed.append(False)
-            counted.append(1)
-    isocount = 1
-    for mult in counted:
-        isocount *= mult
-    return g, isocount
-
-
 def refbydeg(g):
     """
-    Gives all the degrees a color value and gives the vertices the color according to their degree
-    :param g:
+    Gives an initial coloring to the graph based on the degree of the vertices of the graph
+
+    :param g: graph g
+    :return: graph g with coloring based on degrees
     """
     if g.getcoloring():
         raise Exception("This graph already has a coloring!")
-    degs = g.degset()
-    degcol = dict()
-    i = 0
-    for d in degs:
-        degcol[d] = i
-        i += 1
+    degtocol = g.degtocol()
+    coloring = dict()
     for v in g.V():
-        v.setcolornum(degcol.get(v.deg()))
+        colornum = degtocol.get(v.deg())
+        if coloring.get(colornum) is None:
+            coloring[colornum] = set()
+        coloring[colornum].add(v)
+    g.setcoloring(coloring)
 
 
 def refbynbs(g):
@@ -76,10 +76,11 @@ def refbynbs(g):
     herindeel on that same colored group of vertices. When a change has been made during the execution of herindeel
     (indicated by the max_color value actually not being the max color anymore), refbynbs recurses untill no color
     changes were made during its run.
+
     :param g:
     :return g modified:
     """
-    if not g.getcolordict():
+    if not g.getcoloring():
         raise Exception("This graph does not have a coloring yet. Add one!")
     max_color = g.maxcolornum()
     changedict = dict()

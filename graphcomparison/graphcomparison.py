@@ -102,7 +102,7 @@ def processing(graphdict):
                 isomorph = isomorphicbranching(g, grap)
                 if isomorph:
                     print("Isomorph!")
-                    aut = countautomorphisms(g, grap)
+                    aut = slowcountautomorphisms(g, grap)
                 if aut == 0:
                     print("Not isomorph!")
                     aut = -1
@@ -283,9 +283,6 @@ def slowcountautomorphisms(g, grap):
     g = refbynbs(g)
     grap = refbynbs(grap)
 
-    print(g.getcolordict())
-    print(grap.getcolordict())
-
     # If Beta is unbalanced // Reported working.
     if not isbalancedslow(g, grap):
         print("+0")
@@ -297,8 +294,8 @@ def slowcountautomorphisms(g, grap):
         return 1
 
     # choose a coloring class which contains more than 2 vertices
-    coloringg = g.getcolordict()
-    coloringgraph = grap.getcolordict()
+    coloringg = g.getcoloring()
+    coloringgraph = grap.getcoloring()
 
     possibleclasses = list()
 
@@ -323,22 +320,34 @@ def slowcountautomorphisms(g, grap):
         raise Exception("failed to choose a vertex in the chosen color class")
 
     num = 0
-    s = slowcopygraph(g)
+    s = copygraph(g)
+    colorings = s.getcoloring().copy()
     for v in s.V():
         if x.getlabel() == v.getlabel():
             x = v
             break
-    x.colornum = s.maxcolornum() + 1
+    colorings[a].remove(x)
+    nextclass = max(colorings.keys()) + 1
+    setx = set()
+    setx.add(x)
+    colorings[nextclass] = setx
+    s.setcoloring(colorings)
 
     # for each vertex in V(graph) with the same colorgraph
     for y in coloringgraph[a]:
-        t = slowcopygraph(grap)
+        t = copygraph(grap)
+        coloringt = t.getcoloring().copy()
         for v in t.V():
             if y.getlabel() == v.getlabel():
                 y = v
                 break
-        y.colornum = t.maxcolornum() + 1
-        num += slowcountautomorphisms(s, t)
+        coloringt[a].remove(y)
+        nextclass = max(coloringt.keys()) + 1
+        sety = set()
+        sety.add(y)
+        coloringt[nextclass] = sety
+        t.setcoloring(coloringt)
+        num += countautomorphisms(s, t)
     return num
 
 

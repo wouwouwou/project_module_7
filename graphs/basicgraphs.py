@@ -218,6 +218,10 @@ class graph:
 
     def setcoloring(self, a):
         self._coloring = a
+        for key in a.keys():
+            vertices = a[key]
+            for v in vertices:
+                v.setcolornum(key)
 
     def getslowcoloring(self):
         res = []
@@ -326,10 +330,11 @@ class graph:
             degs.add(v.deg())
         return degs
 
-    def getcolordict(self):
-        resultdict = dict()
-        for v in self.V():
-            if resultdict.get(v.getcolornum()) is None:
-                resultdict[v.getcolornum()] = set()
-            resultdict[v.getcolornum()].add(v)
-        return resultdict
+    def degtocol(self):
+        degs = self.degset()
+        degcol = dict()
+        i = 0
+        for d in degs:
+            degcol[d] = i
+            i += 1
+        return degcol
