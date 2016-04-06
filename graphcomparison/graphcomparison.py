@@ -1,4 +1,4 @@
-from colorrefinement.colorrefinement import colorrefinement, refbynbs
+from colorrefinement.colorrefinement import colorrefinement, refbynbs, movevertex
 from graphs.basicgraphs import graph
 from sortingalgorithms.mergesort import msintlist
 
@@ -182,26 +182,7 @@ def choosecolorclass(g, grap):
     return possibleclasses[0]
 
 
-def movevertex(s, x, a):
-    """
-    Moves a vertex from a color class to a new color class
-    :param s: graph
-    :param x: vertex
-    :param a: color class
-    :return: altered graph
-    """
-    colorings = s.getcoloring().copy()
-    for v in s.V():
-        if x.getlabel() == v.getlabel():
-            x = v
-            break
-    colorings[a].remove(x)
-    nextclass = max(colorings.keys()) + 1
-    setx = set()
-    setx.add(x)
-    colorings[nextclass] = setx
-    s.setcoloring(colorings)
-    return s
+
 
 
 def countautomorphisms(g, grap):

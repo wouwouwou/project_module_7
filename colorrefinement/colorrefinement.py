@@ -51,6 +51,24 @@ def slowcolorrefinement(g):
     return g
 
 
+def degreecoloring(g):
+    """
+    Gets the coloring based on the degree of the vertices of the graph
+    :param g: graph g
+    :return: coloring
+    """
+    coloring = dict()
+    degtocol = g.degtocol()
+    for v in g.V():
+        colornum = degtocol.get(v.deg())
+
+        if coloring.get(colornum) is None:
+            coloring[colornum] = set()
+
+        coloring[colornum].add(v)
+    return coloring
+
+
 def refbydeg(g):
     """
     Gives an initial coloring to the graph based on the degree of the vertices of the graph
@@ -60,13 +78,7 @@ def refbydeg(g):
     """
     if g.getcoloring():
         raise Exception("This graph already has a coloring!")
-    degtocol = g.degtocol()
-    coloring = dict()
-    for v in g.V():
-        colornum = degtocol.get(v.deg())
-        if coloring.get(colornum) is None:
-            coloring[colornum] = set()
-        coloring[colornum].add(v)
+    coloring = degreecoloring(g)
     g.setcoloring(coloring)
 
 
@@ -95,9 +107,7 @@ def refbynbs(g):
     if changedict:
         keys = list(changedict.keys())
         for k in keys:
-            vertices = changedict[k]
-            for v in vertices:
-                v.colornum = next_color
+            movevertices(g, changedict[k], next_color)
             next_color += 1
 
     if next_color != max_color + 1:
@@ -131,3 +141,43 @@ def herindeel(changedict, v):
         else:
             changedict[0] = othernbs
     return changedict
+
+
+def movevertex(g, u, c):
+    """
+    Moves a single vertex from a color class to a new color class
+    :param g: graph with the vertex
+    :param u: vertex vertex to be moved
+    :param c: current color class of the vertex
+    :return: altered graph
+    """
+    coloring = g.getcoloring().copy()
+    for v in g.V():
+        if u.getlabel() == v.getlabel():
+            u = v
+            break
+    coloring[c].remove(u)
+    newc = max(coloring.keys()) + 1
+    u.setcolornum(newc)
+    setu = set()
+    setu.add(u)
+    coloring[newc] = setu
+    g.setcoloring(coloring)
+    return g
+
+
+def movevertices(g, vcs, c):
+    """
+    Moves a group of vertices <vcs> in a graph <g> to a new color class <c>
+    :param g: graph g
+    :param vcs: the group of vertices
+    :param c: the color class the group should have
+    :return:
+    """
+    coloring = g.getcoloring().copy()
+    if coloring[c] is None:
+        coloring[c] = set()
+    for v in vcs:
+        coloring[v.getcolornum()].remove(v)
+        v.setcolornum(c)
+        coloring[c].add(v)
