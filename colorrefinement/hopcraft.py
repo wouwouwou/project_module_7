@@ -4,84 +4,6 @@ from graphs.graphIO import loadgraph, writeDOT
 import time
 from graphs.basicgraphs import graph
 
-
-class Node(object):
-
-    def __init__(self, data, prev, next):
-        self.data = data
-        self.prev = prev
-        self.next = next
-
-
-class ListIterator(object):
-    def __init__(self, node):
-        self.current = node
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration()
-
-        result = self.current.data
-        self.current = self.current.next
-
-        return result
-
-
-class DoubleList(object):
-    head = None
-    tail = None
-    length = 0
-
-    def __iter__(self):
-        return ListIterator(self.head)
-
-    @property
-    def size(self):
-        return self.length
-
-    @size.setter
-    def size(self, value):
-        self.length = value
-
-    def append(self, data):
-        new_node = Node(data, None, None)
-        if self.head is None:
-            self.head = self.tail = new_node
-        else:
-            new_node.prev = self.tail
-            new_node.next = None
-            self.tail.next = new_node
-            self.tail = new_node
-        self.size = self.size + 1
-
-    def remove(self, nodevalue):
-        currentnode = self.head
-        self.length -= 1
-
-        while currentnode is not None:
-            if currentnode.data == nodevalue:
-                if currentnode.prev is not None:
-                    currentnode.prev.next = currentnode.next
-                    currentnode.next.prev = currentnode.prev
-                else:
-                    self.head = currentnode.next
-                    currentnode.next.prev = None
-            currentnode = currentnode.next
-
-    def show(self):
-        print("Show list data:")
-        currentnode = self.head
-        while currentnode is not None:
-            print(currentnode.prev.data if hasattr(currentnode.prev, "data") else None)
-            print(currentnode.data)
-            print(currentnode.next.data if hasattr(currentnode.next, "data") else None)
-            currentnode = currentnode.next
-        print("*" * 50)
-
-
 def neighbourlist(g: graph, directed=False):
     """
      Generate an incoming list for given vertices.
@@ -97,77 +19,6 @@ def neighbourlist(g: graph, directed=False):
         if not directed:
             result[e.head()].add(e.tail())
     return result
-
-def fasthopcraft(g: graph):
-    nbl = neighbourlist(g, g.isdirected())
-
-    queue = set()
-    dll = dict()
-    inqueue = dict()
-    color = dict()
-    maxl = 0
-    maxxl = 0
-
-    # Set initial coloring
-    for key, neighbours in nbl.items():
-        # Setup queue that contains colors that need to be refined
-        if not len(neighbours) in queue: # No duplicates
-            queue.add(len(neighbours))
-            inqueue[len(neighbours)] = True
-            maxl = max(len(neighbours), maxl)
-            maxl = max(len(neighbours), maxxl)
-
-    for v in g.V():
-        if not len(nbl[v]) in dll.keys():
-            dll[len(nbl[v])] = DoubleList()
-        dll[len(nbl[v])].append(v)
-
-    while queue:
-        l = set()
-        a = dict()
-
-        # In time O(|E-(C)|) loop dll
-        ci = queue.pop()
-        print(ci)
-        print(dll[ci].show())
-        for q in dll[ci]:
-
-            print(nbl)
-            """
-            for qa in nbl[q]:
-                print(qa)
-                if color[qa] not in l:
-                    l.add(color[qa])
-                if color[qa] not in a.keys():
-                    a[color[qa]] = 1
-                else:
-                    a[color[qa]] += 1
-            """
-        print(l)
-        print(a)
-        for i in l:
-            print("test")
-            print(a[i])
-            print(dll[ci].size)
-            if a[i] < dll[1].size:
-                maxl += 1
-                if a[i] < (len(ci) / 2):
-                    queue.add(i)
-                    print("adding i to queue")
-                    pass
-                elif a[i] > (len(ci) / 2):
-                    queue.add(maxl)
-                    print("adding maxl to queue")
-                    pass
-                color[i] = dll[i]
-                color[l] = dll[ci] - dll[i]
-            else:
-                print("same size")
-
-    # Return graph
-    for v in g.V():
-        v.colornum = color[v]
-    return g
 
 def generatePfromColors(G):
     p = []
@@ -187,7 +38,7 @@ def writeColors(partitions):
         for v in partitions[i]:
             v.colornum = i
 
-def hopcraft(G: graph, usecolors=False):
+def hopcraft(g: graph, usecolors=False):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
      This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.
@@ -197,56 +48,73 @@ def hopcraft(G: graph, usecolors=False):
      :param g: The graph
     """
 
-    neighbours = neighbourlist(G, G.isdirected())
+    neighbours = neighbourlist(g, g.isdirected())
     p = []
     pSplit = []
     degrees = dict()
-    for v in G.V():
-        degree = len(neighbours[v])
-        if degrees.get(degree, -1) == -1:
-            degrees[degree] = {v}
-        else:
-            degrees[degree].add(v)
+    if g.getcoloring():
+        degrees = g.getcoloring()
+    else:
+        for v in g.V():
+            degree = len(neighbours[v])
+            if degrees.get(degree, -1) == -1:
+                degrees[degree] = {v}
+            else:
+                degrees[degree].add(v)
 
     if usecolors:
-        p = generatePfromColors(G)
-        pSplit = generatePfromColors(G)
+        p = generatePfromColors(g)
+        pSplit = generatePfromColors(g)
     else:
         for k in degrees:
             p.append(degrees[k])
             pSplit.append(degrees[k])
 
     w = set(range(len(p)))
+    # Loop queue
     while w:
-        #print("w: ", w)
-        #print("wl: ", [(c, len(p[c])) for c in w])
+        # Choose and remove a set A from W
         aN = w.pop()
         a = p[aN]
         nbs = set()
         for va in a:
             nbs |= neighbours[va]
-        # print("nbs: ", nbs)
+
+        # Iterate for each degree in degrees
         for color in pSplit:
+            # Let X be the set of states for which a transition on degree leads to a state in A
             x = nbs & color
-            # print("nbs & color: ", x)
             if x:
+                # Iterate for each c in range(len(p)), with x&y and y-x not empty.
                 for yN in range(len(p)):
                     if len(p[yN]) > 1:
+                        # Replace y in p by the two sets x&y and y-x
                         y = p[yN]
                         both = x & y
                         ynotx = y - x
                         if both and ynotx:
+
                             p[yN] = both
                             p.append(ynotx)
+                            # If y is in w
                             if yN in w:
+                                # Add position of p.add(y - x) to w
                                 w.add(len(p) - 1)
                             else:
+                                # Partition the smallest one.
                                 if len(both) <= len(ynotx):
+                                    # Add position of x&y in p to w
                                     w.add(yN)
                                 else:
+                                    # Add position of y-x in p to w
                                     w.add(len(p) - 1)
-    print(p)
-    return p
+    r = dict()
+    count = 0
+    for ap in p:
+        r[count] = ap
+        count += 1
+    return r
+
 
 
 def fastautomorphismcount(g: graph):
@@ -270,18 +138,17 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         #l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
-        #l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        l = loadgraph('../test_grafen/threepaths2560.gr', readlist=False)
-        #l = loadgraph('../test_grafen/threepaths10240.gr', readlist=False)
+        # l = loadgraph('../test_grafen/threepaths10240.gr', readlist=True)
         #   `l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/trees90.grl', readlist=True)
         # Gets the first graph out of the list of graphs
-        graph = hopcraft(l)
+        graph = fasthopcraft(l[0][1])
 
         end = time.time()
         t = end - start
-        #writeDOT(graph, "output.dot")
+        writeDOT(graph, "output.dot")
         print("Execution time: " + str(t))
 
 
