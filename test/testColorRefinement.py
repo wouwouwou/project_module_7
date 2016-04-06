@@ -17,15 +17,15 @@ class TestColorRefinement(unittest.TestCase):
         print(str(start))
 
         # Load a Python tuple of length 2, where the first element is a list of Graphs.
-        # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
+        l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_largeexample_4_1026.grl', readlist=True)
         # l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/circle_4_7.grl', readlist=True)
         # Gets the first graph out of the list of graphs
-        g = colorrefinement.colorrefinement(l[0][0])
+        g = colorrefinement.slowcolorrefinement(l[0][0])
         writeDOT(g, "output.dot")
 
         end = time.time()
@@ -43,11 +43,12 @@ class TestColorRefinement(unittest.TestCase):
         # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
-        l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
+        # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/bonusGI1.grl', readlist=True)
         # l = loadgraph('../test_grafen/basis/bonusAut1.gr', readlist=False)
         # l = loadgraph('../test_grafen/trees36.grl', readlist=True)
         # l = loadgraph('../test_grafen/torus144.grl', readlist=True)
+        l = loadgraph('../test_grafen/torus24.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
         # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
         # l = loadgraph('../test_grafen/basis/basicAut1.gr', readlist=True)
