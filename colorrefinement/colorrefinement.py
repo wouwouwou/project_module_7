@@ -179,5 +179,5 @@ def movevertices(g, vcs, c):
     coloring[c] = set()
     for v in vcs:
         coloring[v.getcolornum()].remove(v)
-        v.setcolornum(c)
         coloring[c].add(v)
+    g.setcoloring(coloring)
