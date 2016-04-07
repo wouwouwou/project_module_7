@@ -1,9 +1,4 @@
-import unittest
-
-from graphs.graphIO import loadgraph, writeDOT
-import time
 from graphs.basicgraphs import graph
-
 
 def neighbourlist(g: graph, directed=False):
     """
@@ -22,7 +17,12 @@ def neighbourlist(g: graph, directed=False):
     return result
 
 
-def generatePfromColors(G):
+def generatepartitions(G):
+    """
+    Generate a Plist from colornums
+    :param G:
+    :return:
+    """
     p = []
     colors = dict()
     for v in G.V():
@@ -37,12 +37,16 @@ def generatePfromColors(G):
 
 
 def writeColors(partitions):
+    """
+    Write the colors of the partitions to the corresponding vertex.
+    :param partitions:
+    :return:
+    """
     for i in range(len(partitions)):
         for v in partitions[i]:
             v.colornum = i
 
-
-def hopcraft(g: graph, usecolors=False):
+def hopcroft(g, usecolors=False):
     """
      Generate a Minimum DFA as described by the Hopcroft's algorithm
      This algorithm has a worst-case complexity of O(ns log n), with n the number of states and s the different amount of degrees.
@@ -51,28 +55,23 @@ def hopcraft(g: graph, usecolors=False):
      :param smallestpartition: Select the smallest partition to refine first.
      :param g: The graph
     """
-
     neighbours = neighbourlist(g, g.isdirected())
     p = []
     pSplit = []
     degrees = dict()
-    if g.getcoloring():
-        degrees = g.getcoloring()
-    else:
-        for v in g.V():
+    for v in g.V():
+        if v.getcolornum() is not 0:
+            degree = v.getcolornum()
+        else:
             degree = len(neighbours[v])
-            if degrees.get(degree, -1) == -1:
-                degrees[degree] = {v}
-            else:
-                degrees[degree].add(v)
+        if degrees.get(degree, -1) == -1:
+            degrees[degree] = {v}
+        else:
+            degrees[degree].add(v)
 
-    if usecolors:
-        p = generatePfromColors(g)
-        pSplit = generatePfromColors(g)
-    else:
-        for k in degrees:
-            p.append(degrees[k])
-            pSplit.append(degrees[k])
+    for k in degrees:
+        p.append(degrees[k])
+        pSplit.append(degrees[k])
 
     w = set(range(len(p)))
     # Loop queue
@@ -112,49 +111,11 @@ def hopcraft(g: graph, usecolors=False):
                                 else:
                                     # Add position of y-x in p to w
                                     w.add(len(p) - 1)
-    r = dict()
+
     count = 0
-    for ap in p:
-        r[count] = ap
+    for vset in p:
+        for v in vset:
+            v.setcolornum(count)
         count += 1
-    return r
 
-
-
-def fastautomorphismcount(g: graph):
-    """
-    Calculate the amount of automorphisms of one graph.
-    :param g:
-    :return:
-    """
-    coloring = hopcraft(g, False)
-    isomorphisms = 1
-    for cl in range(len(coloring)):
-        isomorphisms *= len(coloring[cl])
-    return isomorphisms
-
-
-class TestColorRefinement(unittest.TestCase):
-    def testIsomorphismCount(self):
-        start = time.time()
-
-        # Load a Python tuple of length 2, where the first element is a list of Graphs.
-        # l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
-        #l = loadgraph('../test_grafen/colorref_smallexample_2_49.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_smallexample_4_16.grl', readlist=True)
-        l = loadgraph('../test_grafen/colorref_smallexample_4_7.grl', readlist=True)
-        # l = loadgraph('../test_grafen/colorref_smallexample_6_15.grl', readlist=True)
-        # l = loadgraph('../test_grafen/threepaths10240.gr', readlist=True)
-        #   `l = loadgraph('../test_grafen/torus24.grl', readlist=True)
-        # l = loadgraph('../test_grafen/trees90.grl', readlist=True)
-        # Gets the first graph out of the list of graphs
-        graph = fasthopcraft(l[0][1])
-
-        end = time.time()
-        t = end - start
-        writeDOT(graph, "output.dot")
-        print("Execution time: " + str(t))
-
-
-if __name__ == '__main__':
-    unittest.main()
+    return g

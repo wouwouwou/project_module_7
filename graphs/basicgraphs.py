@@ -188,6 +188,18 @@ class graph:
     def __repr__(self):
         return 'V=' + str(self._V) + '\nE=' + str(self._E)
 
+    def createUnion(self, g1, g2):
+        for v in g1.V():
+            self._V.append(v)
+        #v1len = len(self._V)
+        for v in g2.V():
+            #v._label = v._label + v1len
+            self._V.append(v)
+        for e in g1.E():
+            self._E.append(e)
+        for e in g2.E():
+            self._E.append(e)
+
     def V(self):
         """
         Returns the list of vertices of the graph.
